@@ -1,0 +1,12 @@
+#ifndef  ODB_ID_TYPE_HPP
+# define ODB_ID_TYPE_HPP
+
+# define ODB_ID_TYPE $config.libcrails_odb.id_type$
+# define ODB_NULL_ID $config.libcrails_odb.null_id$
+
+namespace ODB
+{
+  typedef ODB_ID_TYPE id_type;
+}
+
+#endif

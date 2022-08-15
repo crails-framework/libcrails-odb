@@ -1,0 +1,46 @@
+intf_libs = # Interface dependencies.
+impl_libs = # Implementation dependencies.
+
+lib{crails-odb}: {hxx ixx txx cxx}{** -version} hxx{version backends id_type} $impl_libs $intf_libs
+
+hxx{version}: in{version} $src_root/manifest
+hxx{backends}: in{backends}
+hxx{id_type}: in{id_type}
+
+hxx{export}@./: cxx.importable = false
+
+# Build options.
+#
+cxx.poptions =+ "-I$out_root" "-I$src_root"
+
+{hbmia obja}{*}: cxx.poptions += -DLIBCRAILS_ODB_STATIC_BUILD
+{hbmis objs}{*}: cxx.poptions += -DLIBCRAILS_ODB_SHARED_BUILD
+
+# Export options.
+#
+lib{crails-odb}:
+{
+  cxx.export.poptions = "-I$out_root" "-I$src_root"
+  cxx.export.libs = $intf_libs
+}
+
+liba{crails-odb}: cxx.export.poptions += -DLIBCRAILS_ODB_STATIC
+libs{crails-odb}: cxx.export.poptions += -DLIBCRAILS_ODB_SHARED
+
+# For pre-releases use the complete version to make sure they cannot be used
+# in place of another pre-release or the final version. See the version module
+# for details on the version.* variable values.
+#
+if $version.pre_release
+  lib{crails-odb}: bin.lib.version = "-$version.project_id"
+else
+  lib{crails-odb}: bin.lib.version = "-$version.major.$version.minor"
+
+# Install into the libcrails-odb/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}:
+{
+  install         = include/crails/odb/
+  install.subdirs = true
+}

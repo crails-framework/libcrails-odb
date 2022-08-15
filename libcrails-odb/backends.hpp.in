@@ -1,0 +1,23 @@
+#ifndef  CRAILS_ODB_BACKENDS_HPP
+# define CRAILS_ODB_BACKENDS_HPP
+
+# define true  1
+# define false 0
+
+# if $config.libcrails_odb.with_pgsql$
+#  define CRAILS_ODB_WITH_PGSQL
+# endif
+# if $config.libcrails_odb.with_sqlite$
+#  define CRAILS_ODB_WITH_SQLITE
+# endif
+# if $config.libcrails_odb.with_mysql$
+#  define CRAILS_ODB_WITH_MYSQL
+# endif
+# if $config.libcrails_odb.with_oracle$
+#  define CRAILS_ODB_WITH_ORACLE
+# endif
+
+# undef true
+# undef false
+
+#endif

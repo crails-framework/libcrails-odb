@@ -1,0 +1,7 @@
+project = libcrails-odb
+
+using version
+using config
+using test
+using install
+using dist

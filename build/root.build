@@ -1,0 +1,27 @@
+config [bool] config.libcrails_odb.with_pgsql  ?= true
+config [bool] config.libcrails_odb.with_sqlite ?= true
+config [bool] config.libcrails_odb.with_mysql  ?= false
+config [bool] config.libcrails_odb.with_oracle ?= false
+config [string] config.libcrails_odb.id_type ?= "unsigned long"
+config [string] config.libcrails_odb.null_id ?= "0"
+
+# Uncomment to suppress warnings coming from external libraries.
+#
+#cxx.internal.scope = current
+cxx.std = latest
+
+using cxx
+using in
+
+hxx{*}: extension = hpp
+ixx{*}: extension = ixx
+txx{*}: extension = txx
+cxx{*}: extension = cpp
+
+# Assume headers are importable unless stated otherwise.
+#
+hxx{*}: cxx.importable = true
+
+# The test target for cross-testing (running tests under Wine, etc).
+#
+test.target = $cxx.target
