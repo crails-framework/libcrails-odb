@@ -1,21 +1,32 @@
-#ifndef  DATABASE_CONTROLLER_HPP
-# define DATABASE_CONTROLLER_HPP
+#ifndef  CRAILS_ODB_CONTROLLER_HPP
+# define CRAILS_ODB_CONTROLLER_HPP
 
 # include <crails/controller.hpp>
+# include <crails/http_response.hpp>
 # include "connection.hpp"
 
-namespace ODB
+namespace Crails
 {
-  class Controller : public Crails::Controller
+  namespace Odb
   {
-  protected:
-    ODB::Connection database;
+    template<class SUPER = Crails::Controller>
+    class Controller : public SUPER
+    {
+    protected:
+      Odb::Connection database;
 
-  public:
-    Controller(Crails::Context& params);
+    public:
+      Controller(Context& context) : SUPER(context)
+      {
+      }
 
-    void finalize() override;
-  };
+      void finalize() override
+      {
+        if (response.get_status_code() == HttpStatus::ok)
+          database.commit();
+      }
+    };
+  }
 }
 
 #endif

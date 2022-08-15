@@ -1,9 +1,9 @@
 #include "migration.hpp"
 
-using namespace ODB;
+using namespace Crails::Odb;
 using namespace std;
 
-bool Migrations::run_for_version(ODB::Database& db, odb::schema_version version) const
+bool Migrations::run_for_version(Database& db, odb::schema_version version) const
 {
   for (auto migration : list)
   {

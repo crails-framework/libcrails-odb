@@ -1,5 +1,5 @@
-#ifndef  MY_TRAITS_HPP
-# define MY_TRAITS_HPP
+#ifndef  CRAILS_ODB_TRAITS_HPP
+# define CRAILS_ODB_TRAITS_HPP
 
 # include "backends.hpp"
 # ifdef CRAILS_ODB_WITH_PGSQL

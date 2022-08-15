@@ -4,8 +4,8 @@
 #include <crails/logger.hpp>
 
 using namespace std;
-using namespace ODB;
 using namespace Crails;
+using namespace Crails::Odb;
 
 std::map<std::string, DatabaseType> database_types_to_string = {
   { "sqlite", sqlite },
@@ -36,7 +36,7 @@ void Database::connect()
 }
 
 
-#ifdef ODB_WITH_PGSQL
+#ifdef CRAILS_ODB_WITH_PGSQL
 bool pgsql_create_from_settings(const Crails::Databases::DatabaseSettings&, std::string, std::string);
 bool pgsql_drop_from_settings(const Crails::Databases::DatabaseSettings&, std::string, std::string);
 #endif
@@ -52,7 +52,7 @@ bool Database::drop_with_settings(const Crails::Databases::DatabaseSettings& set
   {
     switch (backend_it->second)
     {
-#ifdef ODB_WITH_PGSQL
+#ifdef CRAILS_ODB_WITH_PGSQL
     case pgsql:
       return pgsql_drop_from_settings(settings, user, password);
 #endif
@@ -77,14 +77,14 @@ bool Database::create_from_settings(const Crails::Databases::DatabaseSettings& s
   {
     switch (backend_it->second)
     {
-#ifdef ODB_WITH_PGSQL
+#ifdef CRAILS_ODB_WITH_PGSQL
     case pgsql:
       return pgsql_create_from_settings(settings, user, password);
 #else
 # pragma message "compiling crails-odb without pgsql support: create and drop databases will be disabled"
 #endif
 
-#ifdef ODB_WITH_SQLITE
+#ifdef CRAILS_ODB_WITH_SQLITE
     case sqlite:
       logger << Logger::Info << ":: Database::create_from_settings not needed for sqlite backend" << Logger::endl;
       return true;

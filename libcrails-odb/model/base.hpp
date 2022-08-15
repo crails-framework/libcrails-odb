@@ -1,5 +1,5 @@
-#ifndef  DB_MODEL_BASE_HPP
-# define DB_MODEL_BASE_HPP
+#ifndef  CRAILS_ODB_MODEL_BASE_HPP
+# define CRAILS_ODB_MODEL_BASE_HPP
 
 # include <string>
 # include <odb/database.hxx>
@@ -22,42 +22,45 @@
 
 namespace odb { class access; }
 
-namespace ODB
+namespace Crails
 {
-  # pragma db object abstract
-  class ModelBase
+  namespace Odb
   {
-    friend class odb::access;
-  public:
-    ModelBase() : id(0) {}
-    ModelBase(id_type id) : id(id) {}
+    # pragma db object abstract
+    class ModelBase
+    {
+      friend class odb::access;
+    public:
+      ModelBase() : id(0) {}
+      ModelBase(id_type id) : id(id) {}
 
-    virtual std::string get_database_name() const;
+      virtual std::string get_database_name() const;
 
-    id_type get_id() const { return id; }
-    void    set_id(id_type id) { this->id = id; }
-    bool    has_been_erased() const { return erased; }
+      id_type get_id() const { return id; }
+      void    set_id(id_type id) { this->id = id; }
+      bool    has_been_erased() const { return erased; }
 
-    void save(odb::database&);
-    void destroy(odb::database&);
+      void save(odb::database&);
+      void destroy(odb::database&);
 
-    virtual void before_save()    {}
-    virtual void after_save()     {}
-    virtual void before_destroy() {}
-    virtual void after_destroy()  {}
+      virtual void before_save()    {}
+      virtual void after_save()     {}
+      virtual void before_destroy() {}
+      virtual void after_destroy()  {}
 
-  protected:
-    virtual void odb_persist(odb::database&) = 0;
-    virtual void odb_update(odb::database&)  = 0;
-    virtual void odb_erase(odb::database&)   = 0;
+    protected:
+      virtual void odb_persist(odb::database&) = 0;
+      virtual void odb_update(odb::database&)  = 0;
+      virtual void odb_erase(odb::database&)   = 0;
 
-    #pragma db id auto
-    id_type id;
+      #pragma db id auto
+      id_type id;
 
-  private:
-    #pragma db transient
-    bool erased = false;
-  };
+    private:
+      #pragma db transient
+      bool erased = false;
+    };
+  }
 }
 
 #endif

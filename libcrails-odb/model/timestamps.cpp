@@ -2,20 +2,21 @@
 #include <chrono>
 
 using namespace std;
+using namespace Crails;
 
-void ODB::ModelTimestamps::save(odb::database& db)
+void Odb::ModelTimestamps::save(odb::database& db)
 {
   update_timestamps();
   BaseType::save(db);
 }
 
-void ODB::ModelTimestamps::destroy(odb::database& db)
+void Odb::ModelTimestamps::destroy(odb::database& db)
 {
   update_timestamps();
   BaseType::destroy(db);
 }
 
-void ODB::ModelTimestamps::update_timestamps()
+void Odb::ModelTimestamps::update_timestamps()
 {
   auto now = chrono::system_clock::now();
 

@@ -6,9 +6,9 @@
 #include <sys/wait.h>
 
 using namespace std;
-using namespace ODB;
 using namespace boost;
 using namespace Crails;
+using namespace Crails::Odb;
 
 #ifdef CRAILS_ODB_WITH_PGSQL
 

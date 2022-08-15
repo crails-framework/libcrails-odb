@@ -1,5 +1,5 @@
-#ifndef  MY_MIGRATION_HPP
-# define MY_MIGRATION_HPP
+#ifndef  CRAILS_ODB_MIGRATION_HPP
+# define CRAILS_ODB_MIGRATION_HPP
 
 # include <odb/schema-catalog.hxx>
 # include <list>
@@ -8,35 +8,38 @@
 # ifndef ODB_COMPILER
 #  include "database.hpp"
 # else
-namespace ODB { class Database; }
+namespace Crails { namespace Odb { class Database; } }
 # endif
 
-namespace ODB
+namespace Crails
 {
-  typedef std::function<bool (ODB::Database&, odb::schema_version)> MigrateFunction;
-
-  struct Migration
+  namespace Odb
   {
-    std::string                          name;
-    odb::schema_version                  version;
-    std::function<bool (ODB::Database&)> runner;
-  };
+    typedef std::function<bool (Odb::Database&, odb::schema_version)> MigrateFunction;
 
-  struct Migrations
-  {
-    Migrations();
-
-    bool run_for_version(ODB::Database& db, odb::schema_version version) const;
-    std::list<Migration> list;
-
-    operator MigrateFunction() const
+    struct Migration
     {
-      return std::bind(&ODB::Migrations::run_for_version, this, std::placeholders::_1, std::placeholders::_2);
-    }
-  };
+      std::string                          name;
+      odb::schema_version                  version;
+      std::function<bool (Odb::Database&)> runner;
+    };
+
+    struct Migrations
+    {
+      Migrations();
+
+      bool run_for_version(Odb::Database& db, odb::schema_version version) const;
+      std::list<Migration> list;
+
+      operator MigrateFunction() const
+      {
+        return std::bind(&Odb::Migrations::run_for_version, this, std::placeholders::_1, std::placeholders::_2);
+      }
+    };
+  }
 }
 
 # define ADD_MIGRATION(name, version, body) \
-  ODB::Migration name = { #name, version, [](ODB::Database& database) -> bool body };
+  Crails::Odb::Migration name = { #name, version, [](Odb::Database& database) -> bool body };
 
 #endif

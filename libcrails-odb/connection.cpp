@@ -2,23 +2,24 @@
 #include <crails/logger.hpp>
 
 using namespace std;
+using namespace Crails;
 
-thread_local safe_ptr<ODB::Connection> ODB::Connection::instance;
+thread_local safe_ptr<Odb::Connection> Odb::Connection::instance;
 
-ODB::Connection::Connection()
+Odb::Connection::Connection()
 {
   if (instance)
-    throw runtime_error("only one instance of ODB::Connection allowed per thread");
-  instance = shared_ptr<ODB::Connection>(this, [](ODB::Connection*) {});
+    throw runtime_error("only one instance of Odb::Connection allowed per thread");
+  instance = shared_ptr<Odb::Connection>(this, [](Odb::Connection*) {});
 }
 
-ODB::Connection::~Connection()
+Odb::Connection::~Connection()
 {
   rollback();
   instance.reset();
 }
 
-void ODB::Connection::commit()
+void Odb::Connection::commit()
 {
   Crails::logger << Crails::Logger::Info << "Transaction commit. Database time: " << time << 's' << Crails::Logger::endl;
   Utils::Timer timer;
@@ -27,7 +28,7 @@ void ODB::Connection::commit()
   time = 0.f;
 }
 
-void ODB::Connection::rollback()
+void Odb::Connection::rollback()
 {
   transaction.rollback();
   time = 0.f;

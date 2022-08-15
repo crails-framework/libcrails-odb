@@ -1,12 +1,15 @@
-#ifndef  DB_MODEL_HPP
-# define DB_MODEL_HPP
+#ifndef  CRAILS_ODB_MODEL_HPP
+# define CRAILS_ODB_MODEL_HPP
 
 # include "model/timestamps.hpp"
 # include "config/odb.hpp"
 
-namespace ODB
+namespace Crails
 {
-  typedef ModelTimestamps Model;
+  namespace Odb
+  {
+    typedef ModelTimestamps Model;
+  }
 }
   
 #endif

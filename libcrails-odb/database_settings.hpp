@@ -1,11 +1,14 @@
-#ifndef  DB_DATABASE_SETTINGS_HPP
-# define DB_DATABASE_SETTINGS_HPP
+#ifndef  CRAILS_ODB_DATABASE_SETTINGS_HPP
+# define CRAILS_ODB_DATABASE_SETTINGS_HPP
 
 # include <crails/databases.hpp>
 
-namespace ODB
+namespace Crails
 {
-  Crails::Databases::DatabaseSettings get_database_settings_for(const std::string& name);
+  namespace Odb
+  {
+    Crails::Databases::DatabaseSettings get_database_settings_for(const std::string& name);
+  }
 }
 
 #endif
