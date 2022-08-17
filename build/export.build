@@ -1,6 +1,6 @@
 $out_root/
 {
-  include crails/
+  include libcrails-odb/
 }
 
-export $out_root/libcrails-odb/$import.target
+export $out_root/crails/odb/$import.target
