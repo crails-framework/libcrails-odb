@@ -14,6 +14,13 @@ std::map<std::string, DatabaseType> database_types_to_string = {
   { "oracle", oracle }
 };
 
+const Database::Initializers Database::initializers = {
+  { sqlite, &initialize_for_sqlite },
+  { pgsql,  &initialize_for_postgresql },
+  { mysql,  &initialize_for_mysql },
+  { oracle, &initialize_for_oracle }
+};
+
 Database::Database(const Databases::DatabaseSettings& settings) : Databases::Database(ClassType())
 {
   const string backend_str = defaults_to<const char*>(settings, "type", "sqlite");
