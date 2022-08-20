@@ -40,6 +40,7 @@ namespace Crails
       id_type get_id() const { return id; }
       void    set_id(id_type id) { this->id = id; }
       bool    has_been_erased() const { return erased; }
+      bool    is_persistent() const { return id != ODB_NULL_ID && !erased; }
 
       void save(odb::database&);
       void destroy(odb::database&);

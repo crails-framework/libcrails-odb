@@ -10,7 +10,7 @@ std::string Odb::ModelBase::get_database_name() const
 
 void Odb::ModelBase::save(odb::database& db)
 {
-  if (id == 0)
+  if (id == ODB_NULL_ID)
     odb_persist(db);
   else
     odb_update(db);
@@ -18,7 +18,7 @@ void Odb::ModelBase::save(odb::database& db)
 
 void Odb::ModelBase::destroy(odb::database& db)
 {
-  if (id != 0)
+  if (is_persistent())
     odb_erase(db);
   erased = true;
 }
