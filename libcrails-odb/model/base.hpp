@@ -2,6 +2,7 @@
 # define CRAILS_ODB_MODEL_BASE_HPP
 
 # include <string>
+# include <crails/safe_ptr.hpp>
 # include <odb/database.hxx>
 # include "../id_type.hpp"
 
