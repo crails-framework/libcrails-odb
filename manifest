@@ -2,9 +2,9 @@
 name: libcrails-odb
 version: 2.0.0
 summary: C++ library bringing odb support to the crails framework
-license: BSD-C3
+license: BSD-3-Clause
 description-file: README.md
-url: https://example.org/libcrails-odb
+url: https://github.com/crails-framework/libcrails-odb
 email: michael@unetresgrossebite.com
 depends: * build2 >= 0.15.0
 depends: * bpkg >= 0.15.0

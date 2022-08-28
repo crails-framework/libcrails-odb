@@ -1,7 +1,9 @@
 intf_libs = # Interface dependencies.
 impl_libs = # Implementation dependencies.
-
-lib{crails-odb}: {hxx ixx txx cxx}{** -version} hxx{version backends id_type} $impl_libs $intf_libs
+import intf_libs += libodb%lib{odb}
+import intf_libs += libcrails%lib{crails}
+import intf_libs += libcrails-databases%lib{crails-databases}
+lib{crails-odb}: {hxx ixx txx cxx}{** -version -backends -id_type} hxx{version backends id_type} $impl_libs $intf_libs
 
 hxx{version}: in{version} $src_root/manifest
 hxx{backends}: in{backends}
@@ -20,7 +22,7 @@ cxx.poptions =+ "-I$out_root" "-I$src_root"
 #
 lib{crails-odb}:
 {
-  cxx.export.poptions = "-I$out_root" "-I$src_root"
+  cxx.export.poptions = "-I$out_root/libcrails-odb/" "-I$src_root/libcrails-odb/"
   cxx.export.libs = $intf_libs
 }
 
@@ -41,6 +43,6 @@ else
 #
 {hxx ixx txx}{*}:
 {
-  install         = include/crails/odb/
+  install         = include/
   install.subdirs = true
 }
