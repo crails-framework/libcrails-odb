@@ -3,11 +3,11 @@ impl_libs = # Implementation dependencies.
 import intf_libs += libodb%lib{odb}
 import intf_libs += libcrails%lib{crails}
 import intf_libs += libcrails-databases%lib{crails-databases}
-lib{crails-odb}: {hxx ixx txx cxx}{** -version -backends -id_type} hxx{version backends id_type} $impl_libs $intf_libs
+lib{crails-odb}: {hxx ixx txx cxx}{** -crails/odb/version -crails/odb/backends -crails/odb/id_type} hxx{crails/odb/version crails/odb/backends crails/odb/id_type} $impl_libs $intf_libs
 
-hxx{version}: in{version} $src_root/manifest
-hxx{backends}: in{backends}
-hxx{id_type}: in{id_type}
+hxx{crails/odb/version}: in{crails/odb/version} $src_root/manifest
+hxx{crails/odb/backends}: in{crails/odb/backends}
+hxx{crails/odb/id_type}: in{crails/odb/id_type}
 
 hxx{export}@./: cxx.importable = false
 
