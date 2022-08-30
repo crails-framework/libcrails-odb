@@ -1,6 +1,3 @@
-#ifndef DATATREE_TRAITS_HPP
-#define DATATREE_TRAITS_HPP
- 
 #include <cstring> // std::memcpy
 #include <odb/pgsql/traits.hxx>
 #include <crails/datatree.hpp>
@@ -8,7 +5,7 @@
 
 namespace odb
 {
-  namespace pgsql
+  namespace TRAITS_INCLUDE_SQL_BACKEND
   {
     template <>
     class value_traits<DataTree, id_string>
@@ -57,5 +54,3 @@ namespace odb
     };
   }
 }
-
-#endif

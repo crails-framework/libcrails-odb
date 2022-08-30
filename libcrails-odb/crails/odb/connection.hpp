@@ -1,14 +1,14 @@
 #ifndef  CRAILS_ODB_CONNECTION_HPP
 # define CRAILS_ODB_CONNECTION_HPP
 
+# include <crails/utils/timer.hpp>
 # include <crails/safe_ptr.hpp>
-# include <odb/pgsql/query.hxx>
 # include <odb/result.hxx>
 # include <odb/database.hxx>
+# include "query.hpp"
 # include "transaction.hpp"
 # include "exception.hpp"
 # include "id_type.hpp"
-# include <crails/utils/timer.hpp>
 
 namespace Crails
 {

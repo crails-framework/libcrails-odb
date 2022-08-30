@@ -1,14 +1,11 @@
-#ifndef  VECTOR_ID_TRAITS_HPP
-# define VECTOR_ID_TRAITS_HPP
-
-# include <cstring> // std::memcpy
-# include <odb/pgsql/traits.hxx>
-# include <vector>
-# include <sstream>
+#include <cstring> // std::memcpy
+#include <odb/pgsql/traits.hxx>
+#include <vector>
+#include <sstream>
 
 namespace odb
 {
-  namespace pgsql
+  namespace TRAITS_INCLUDE_SQL_BACKEND
   {
     template <>
     class value_traits<std::vector<unsigned long>, id_string>
@@ -65,5 +62,3 @@ namespace odb
     };
   }
 }
-
-#endif

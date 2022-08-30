@@ -1,6 +1,6 @@
 #include <odb/transaction.hxx>
 #include <odb/session.hxx>
-#include <odb/pgsql/database.hxx>
+#include <odb/database.hxx>
 #include <crails/databases.hpp>
 #include <thread>
 #include "database.hpp"
