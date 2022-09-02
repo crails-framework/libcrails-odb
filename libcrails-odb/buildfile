@@ -3,6 +3,14 @@ impl_libs = # Implementation dependencies.
 import intf_libs += libodb%lib{odb}
 import intf_libs += libcrails%lib{crails}
 import intf_libs += libcrails-databases%lib{crails-databases}
+
+if ($config.libcrails_odb.odb_with_sqlite == true)
+  import intf_libs += libodb-sqlite%lib{odb-sqlite}
+if ($config.libcrails_odb.odb_with_pgsql == true)
+  import intf_libs += libodb-pgsql%lib{odb-pgsql}
+if ($config.libcrails_odb.odb_with_mysql == true)
+  import intf_libs += libodb-mysql%lib{odb-mysql}
+
 lib{crails-odb}: {hxx ixx txx cxx}{** -crails/odb/version -crails/odb/backends -crails/odb/id_type} hxx{crails/odb/version crails/odb/backends crails/odb/id_type} $impl_libs $intf_libs
 
 hxx{crails/odb/version}: in{crails/odb/version} $src_root/manifest
