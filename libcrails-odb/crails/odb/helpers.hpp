@@ -9,23 +9,7 @@
 # ifndef ODB_COMPILER
 #  include "connection.hpp"
 # endif
-
-#ifndef ODB_COMPILER
-namespace odb
-{
-  template<typename MODEL, typename CONTAINER = MODEL>
-  std::vector<MODEL> to_vector(odb::result<CONTAINER>& results)
-  {
-    std::vector<MODEL> models;
-    unsigned int i = 0;
-
-    models.resize(results.size());
-    for (const auto& result : results)
-      models[i++] = result;
-    return models;
-  }
-}
-#endif
+# include "to_vector.hpp"
 
 template<typename MODELS>
 std::vector<Crails::Odb::id_type> collect_ids_from(const MODELS& models)

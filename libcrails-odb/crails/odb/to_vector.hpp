@@ -13,8 +13,7 @@ namespace Crails
       std::vector<MODEL> models;
 
       //models.reserve(results.size()); // would be nice, but does not work for all backends: https://www.codesynthesis.com/pipermail/odb-users/2012-June/000591.html
-      for (const auto& result : results)
-        models.push_back(result);
+      std::copy(results.begin(), results.end(), std::back_inserter(models));
       return models;
     }
   }
