@@ -1,5 +1,4 @@
 #include <cstring> // std::memcpy
-#include <odb/pgsql/traits.hxx>
 #include <vector>
 #include <sstream>
 
