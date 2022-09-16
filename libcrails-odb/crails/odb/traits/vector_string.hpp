@@ -1,16 +1,17 @@
 #include <cstring> // std::memcpy
 #include <vector>
 #include <sstream>
+#include <string>
 
 namespace odb
 {
   namespace TRAITS_INCLUDE_SQL_BACKEND
   {
     template <>
-    class value_traits<std::vector<unsigned long>, CRAILS_ODB_ID_STRING>
+    class value_traits<std::vector<std::string>, CRAILS_ODB_ID_STRING>
     {
     public:
-      typedef std::vector<unsigned long> value_type;
+      typedef std::vector<std::string> value_type;
       typedef value_type query_type;
       typedef details::buffer image_type;
 
@@ -22,36 +23,18 @@ namespace odb
         v.clear();
         if (!is_null)
         {
-          bool done = false;
-	  bool in_word = false;
-          char c;
-          std::string s(b.data(), n);
-	  std::ostringstream word;
-          std::istringstream is(s);
-          is >> c; // '{'
-          while (!done)
-	  {
-	    is >> c;
-	    if (escaping)
-              continue ;
-	    switch (c)
-	    {
-            case '\\':
-	      escaping = true;
-	      break ;
+          const std::string s(b.data(), n);
+          for (std::size_t i = 0 ; i < s.length() ;)
+          {
+            switch (s[i])
+            {
             case '"':
-	      if (in_word)
-                v.push_back(word.str());
-	      in_word = !in_word;
-	      break ;
-	    case '}':
-              if (!in_word) done = true;
+              v.push_back(output_escaped_word(&s[i], s.length() - i, i));
               break ;
-	    default:
-	      if (in_word) word << c;
-	      break ;
-	    }
-	  }
+            case '}':
+              return ;
+            }
+          }
         }
       }
 
@@ -67,14 +50,9 @@ namespace odb
              i != e;)
         {
           os << '"';
-	  for (std::size_t ii = 0 ; ii != i->length() ; ++ii)
-	  {
-            char c = *i[ii];
-	    if (c == '"' || c == '\\') os << '\\';
-            os << *i[ii];
-	  }
-	  os << '"'
-         if (++i != e) << ',';
+          input_escaped_word(os, i->c_str(), i->length());
+          os << '"';
+          if (++i != e) os << ',';
         }
         os << '}';
         const std::string& s(os.str());
@@ -83,7 +61,41 @@ namespace odb
           b.capacity(n);
         std::memcpy(b.data(), s.c_str(), n);
       }
+
+    private:
+      static void input_escaped_word(std::ostringstream& os, const char* word, std::size_t length)
+      {
+        for (std::size_t i = 0 ; i != length ; ++i)
+        {
+          char c = word[i];
+          if (c == '"' || c == '\\') os << '\\';
+          os << c;
+        }
+      }
+
+      static std::string output_escaped_word(const char* buffer, std::size_t length, std::size_t& walked)
+      {
+        char c;
+        bool escaping = false;
+        std::ostringstream word;
+        std::size_t i = 0;
+
+        for (; i < length ; ++i)
+        {
+          char c = buffer[i];
+          if (c == '\\' && !escaping)
+            escaping = true;
+          else if (c == '"' && !escaping)
+            break ;
+          else
+          {
+            word << c;
+            escaping = false;
+          }
+        }
+        walked += i + 1;
+        return word.str();
+      }
     };
   }
 }
-

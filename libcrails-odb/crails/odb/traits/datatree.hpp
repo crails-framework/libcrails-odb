@@ -7,7 +7,7 @@ namespace odb
   namespace TRAITS_INCLUDE_SQL_BACKEND
   {
     template <>
-    class value_traits<DataTree, id_string>
+    class value_traits<DataTree, CRAILS_ODB_ID_STRING>
     {
     public:
       typedef DataTree value_type;
