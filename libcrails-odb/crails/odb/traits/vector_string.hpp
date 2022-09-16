@@ -7,7 +7,7 @@ namespace odb
   namespace TRAITS_INCLUDE_SQL_BACKEND
   {
     template <>
-    class value_traits<std::vector<unsigned long>, id_string>
+    class value_traits<std::vector<unsigned long>, CRAILS_ODB_ID_STRING>
     {
     public:
       typedef std::vector<unsigned long> value_type;
@@ -22,17 +22,36 @@ namespace odb
         v.clear();
         if (!is_null)
         {
+          bool done = false;
+	  bool in_word = false;
           char c;
           std::string s(b.data(), n);
+	  std::ostringstream word;
           std::istringstream is(s);
           is >> c; // '{'
-          for (c = static_cast<char>(is.peek());
-               c != '}';
-               is >> c)
-          {
-            v.push_back(long ());
-            is >> v.back();
-          }
+          while (!done)
+	  {
+	    is >> c;
+	    if (escaping)
+              continue ;
+	    switch (c)
+	    {
+            case '\\':
+	      escaping = true;
+	      break ;
+            case '"':
+	      if (in_word)
+                v.push_back(word.str());
+	      in_word = !in_word;
+	      break ;
+	    case '}':
+              if (!in_word) done = true;
+              break ;
+	    default:
+	      if (in_word) word << c;
+	      break ;
+	    }
+	  }
         }
       }
 
@@ -47,9 +66,15 @@ namespace odb
         for (value_type::const_iterator i(v.begin()), e(v.end());
              i != e;)
         {
-          os << *i;
-          if (++i != e)
-            os << ',';
+          os << '"';
+	  for (std::size_t ii = 0 ; ii != i->length() ; ++ii)
+	  {
+            char c = *i[ii];
+	    if (c == '"' || c == '\\') os << '\\';
+            os << *i[ii];
+	  }
+	  os << '"'
+         if (++i != e) << ',';
         }
         os << '}';
         const std::string& s(os.str());
@@ -61,3 +86,4 @@ namespace odb
     };
   }
 }
+
