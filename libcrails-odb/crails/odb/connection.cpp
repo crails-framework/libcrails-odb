@@ -4,19 +4,13 @@
 using namespace std;
 using namespace Crails;
 
-thread_local safe_ptr<Odb::Connection> Odb::Connection::instance;
-
 Odb::Connection::Connection()
 {
-  if (instance)
-    throw runtime_error("only one instance of Odb::Connection allowed per thread");
-  instance = shared_ptr<Odb::Connection>(this, [](Odb::Connection*) {});
 }
 
 Odb::Connection::~Connection()
 {
   rollback();
-  instance.reset();
 }
 
 void Odb::Connection::commit()

@@ -17,12 +17,8 @@ namespace Crails
     class Connection
     {
     public:
-      static thread_local safe_ptr<Odb::Connection> instance;
-
       Connection();
-      ~Connection();
-
-      static safe_ptr<Odb::Connection> get() { return instance; }
+      virtual ~Connection();
 
       float time = 0.f;
 

@@ -9,11 +9,11 @@ namespace Crails
 {
   namespace Odb
   {
-    template<class SUPER = Crails::Controller>
+    template<class SUPER = Crails::Controller, class DATABASE = Odb::Connection>
     class Controller : public SUPER
     {
     protected:
-      Odb::Connection database;
+      DATABASE database;
 
     public:
       Controller(Context& context) : SUPER(context)
