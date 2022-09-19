@@ -4,7 +4,7 @@
 using namespace std;
 using namespace Crails;
 
-Odb::Connection::Connection()
+Odb::Connection::Connection() : transaction(Odb::Transaction::get())
 {
 }
 

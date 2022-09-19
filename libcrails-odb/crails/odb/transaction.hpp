@@ -23,6 +23,8 @@ namespace Crails
       std::string get_database_name() const { return database_name; }
       odb::database& get_database();
 
+      static Transaction& get();
+
       void require(const std::string& name);
       void start(const std::string& name, odb::database&);
       void commit();

@@ -96,7 +96,7 @@ namespace Crails
         try
         {
           model.destroy(transaction.get_database());
-    model.after_destroy();
+          model.after_destroy();
         }
         catch (const odb::object_not_persistent& e)
         {
@@ -117,7 +117,7 @@ namespace Crails
         }
       }
 
-      Transaction transaction;
+      Transaction& transaction;
     };
   }
 }

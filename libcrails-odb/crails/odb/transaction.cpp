@@ -20,6 +20,12 @@ Odb::Transaction::~Transaction()
 {
 }
 
+Odb::Transaction& Odb::Transaction::get()
+{
+  static thread_local Odb::Transaction transaction;
+  return transaction;
+}
+
 odb::database& Odb::Transaction::get_database()
 {
   if (!odb_database)
