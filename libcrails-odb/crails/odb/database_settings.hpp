@@ -7,6 +7,7 @@ namespace Crails
 {
   namespace Odb
   {
+    extern const std::string default_configuration_name;
     Crails::Databases::DatabaseSettings get_database_settings_for(const std::string& name);
   }
 }

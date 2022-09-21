@@ -56,7 +56,7 @@ namespace Crails
       const std::string& get_database_name() const { return database_name; }
       DatabaseType       get_type()          const { return backend; }
 
-      void connect();
+      void connect() override;
 
       inline void migrate(std::function<bool (Odb::Database&, odb::schema_version)> callback = [](Odb::Database&, odb::schema_version) { return true; })
       {

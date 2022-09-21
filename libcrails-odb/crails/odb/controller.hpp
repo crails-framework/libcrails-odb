@@ -22,6 +22,7 @@ namespace Crails
 
       void finalize() override
       {
+        SUPER::finalize();
         if (static_cast<int>(SUPER::response.get_status_code()) < 400)
           database.commit();
       }

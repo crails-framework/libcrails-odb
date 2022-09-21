@@ -8,16 +8,6 @@ namespace Crails
 {
   namespace Odb
   {
-    template<typename V>
-    static V defaults_to(const std::map<std::string, boost::any>& a, const std::string& k, const V def)
-    {
-      typename std::map<std::string, boost::any>::const_iterator it = a.find(k);
-
-      if (it == a.end())
-        return def;
-      return boost::any_cast<V>(it->second);
-    }
-
     inline odb::database* initialize_for_mysql(const Crails::Databases::DatabaseSettings& settings)
     {
   #ifdef CRAILS_ODB_WITH_MYSQL
