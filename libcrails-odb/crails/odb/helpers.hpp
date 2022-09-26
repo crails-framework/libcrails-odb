@@ -27,7 +27,7 @@ bool update_id_list(
 {
 #  ifndef ODB_COMPILER
   Crails::Odb::Connection database;
-  auto ids = unique_list<std::vector<Crails::Odb::id_type> >(model_ids);
+  auto ids = Crails::unique_list<std::vector<Crails::Odb::id_type> >(model_ids);
 
   for (auto it = model_list.begin() ; it != model_list.end() ;)
   {

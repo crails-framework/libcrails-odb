@@ -40,7 +40,7 @@ namespace Crails
       template<typename MODEL>
       unsigned long count(odb::query<MODEL> query = odb::query<MODEL>(true))
       {
-        Utils::TimeGuard time(time);
+        Utils::TimeGuard timer(time);
 
         start_transaction_for<MODEL>();
         return transaction.get_database()
@@ -51,7 +51,7 @@ namespace Crails
       bool find_one(MODEL_PTR& model, odb::query<typename MODEL_PTR::element_type> query = odb::query<typename MODEL_PTR::element_type>(true))
       {
         typedef typename MODEL_PTR::element_type MODEL;
-        Utils::TimeGuard time(time);
+        Utils::TimeGuard timer(time);
 
         start_transaction_for<MODEL>();
         model = transaction.get_database().query_one<MODEL>(query);
@@ -67,7 +67,7 @@ namespace Crails
       template<typename MODEL>
       bool find(odb::result<MODEL>& results, odb::query<MODEL> query = odb::query<MODEL>(true))
       {
-        Utils::TimeGuard time(time);
+        Utils::TimeGuard timer(time);
 
         start_transaction_for<MODEL>();
         results = transaction.get_database().query<MODEL>(query);
@@ -77,8 +77,7 @@ namespace Crails
       template<typename MODEL>
       void save(MODEL& model)
       {
-        Utils::TimeGuard time(time);
-
+        Utils::TimeGuard timer(time);
         start_transaction_for(model);
         model.before_save();
         model.save(transaction.get_database());
@@ -88,7 +87,7 @@ namespace Crails
       template<typename MODEL>
       void destroy(MODEL& model)
       {
-        Utils::TimeGuard time(time);
+        Utils::TimeGuard timer(time);
 
         model.before_destroy();
         start_transaction_for(model);
