@@ -24,6 +24,7 @@ void Odb::Connection::commit()
 
 void Odb::Connection::rollback()
 {
+  Crails::logger << Crails::Logger::Info << "Transaction rollback. Database time: " << time << 's' << Crails::Logger::endl;
   transaction.rollback();
   time = 0.f;
 }

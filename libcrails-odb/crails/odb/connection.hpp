@@ -40,6 +40,8 @@ namespace Crails
       template<typename MODEL>
       unsigned long count(odb::query<MODEL> query = odb::query<MODEL>(true))
       {
+        Utils::TimeGuard time(time);
+
         start_transaction_for<MODEL>();
         return transaction.get_database()
           .query_value<typename MODEL::Count>(query).value;
@@ -49,11 +51,10 @@ namespace Crails
       bool find_one(MODEL_PTR& model, odb::query<typename MODEL_PTR::element_type> query = odb::query<typename MODEL_PTR::element_type>(true))
       {
         typedef typename MODEL_PTR::element_type MODEL;
-        Utils::Timer timer;
+        Utils::TimeGuard time(time);
 
         start_transaction_for<MODEL>();
         model = transaction.get_database().query_one<MODEL>(query);
-        time += timer.GetElapsedSeconds();
         return model.get() != 0;
       }
 
@@ -66,30 +67,28 @@ namespace Crails
       template<typename MODEL>
       bool find(odb::result<MODEL>& results, odb::query<MODEL> query = odb::query<MODEL>(true))
       {
-        Utils::Timer timer;
+        Utils::TimeGuard time(time);
 
         start_transaction_for<MODEL>();
         results = transaction.get_database().query<MODEL>(query);
-        time += timer.GetElapsedSeconds();
         return !results.empty();
       }
 
       template<typename MODEL>
       void save(MODEL& model)
       {
-        Utils::Timer timer;
+        Utils::TimeGuard time(time);
 
         start_transaction_for(model);
         model.before_save();
         model.save(transaction.get_database());
         model.after_save();
-        time += timer.GetElapsedSeconds();
       }
 
       template<typename MODEL>
       void destroy(MODEL& model)
       {
-        Utils::Timer timer;
+        Utils::TimeGuard time(time);
 
         model.before_destroy();
         start_transaction_for(model);
@@ -102,7 +101,6 @@ namespace Crails
         {
           Odb::throw_exception(model, e.what());
         }
-        time += timer.GetElapsedSeconds();
       }
 
       template<typename MODEL>
