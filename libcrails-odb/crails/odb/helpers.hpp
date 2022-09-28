@@ -8,7 +8,7 @@
 # include <algorithm>
 # include "id_type.hpp"
 # include "to_vector.hpp"
-# ifndef ODB_COMPILER
+# if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
 #  include "connection.hpp"
 # endif
 
@@ -19,14 +19,11 @@ std::vector<Crails::Odb::id_type> collect_ids_from(const MODELS& models)
   return Crails::collect(models, &Model::get_id);
 }
 
-# ifndef CRAILS_FRONT_HELPERS
 template<typename MODEL>
 bool update_id_list(
   std::vector<Crails::Odb::id_type>& model_list,
   Data model_ids)
 {
-#  ifndef ODB_COMPILER
-  Crails::Odb::Connection database;
   auto ids = Crails::unique_list<std::vector<Crails::Odb::id_type> >(model_ids);
 
   for (auto it = model_list.begin() ; it != model_list.end() ;)
@@ -42,6 +39,9 @@ bool update_id_list(
     }
   }
 
+# if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
+  Crails::Odb::Connection database;
+
   for (Crails::Odb::id_type id : ids)
   {
     std::shared_ptr<MODEL> model;
@@ -50,7 +50,10 @@ bool update_id_list(
       return false;
     model_list.push_back(id);
   }
-#  endif
+# else
+  for (Crails::Odb::id_type id : ids)
+    model_list.push_back(id);
+# endif
   return true;
 }
 
@@ -59,26 +62,13 @@ bool update_id_list(
   std::list<std::shared_ptr<MODEL> >& model_list,
   Data model_ids)
 {
-#  ifndef ODB_COMPILER
+  auto ids = update_id_list(
+    Crails::collect(model_list, &MODEL::get_id),
+    model_ids
+  );
+
+# if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
   Crails::Odb::Connection database;
-  std::vector<Crails::Odb::id_type> ids = model_ids;
-  {
-    auto it = model_list.begin();
-
-    while (it != model_list.end())
-    {
-      std::shared_ptr<MODEL> model(*it);
-      auto exists_in_new_list = std::find(ids.begin(), ids.end(), model->get_id());
-
-      if (exists_in_new_list == ids.end())
-        it = model_list.erase(it); // if it isn't in the new list, remove the building
-      else
-      {
-        ids.erase(exists_in_new_list); // if it is in both lists, ignore it
-        it++;
-      }
-    }
-  }
 
   for (Crails::Odb::id_type id : ids)
   {
@@ -88,9 +78,19 @@ bool update_id_list(
       return false;
     model_list.push_back(model);
   }
+# elif defined(__COMET_CLIENT__)
+  for (Crails::Odb::id_type id : ids)
+  {
+    std::shared_ptr<MODEL> model = std::make_shared<MODEL>();
+
+    model->set_id(id);
+#  ifdef COMET_MODELS_AUTOFETCH
+    model->fetch();
 #  endif
+    model_list.push_back(model);
+  }
+# endif
   return true;
 }
-# endif
 
 #endif
