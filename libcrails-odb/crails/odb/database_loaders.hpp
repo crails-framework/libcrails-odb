@@ -2,15 +2,19 @@
 # define CRAILS_ODB_DATABASE_LOADERS_HPP
 
 # include "database.hpp"
-# include "crails/any_cast.hpp"
+# include <crails/any_cast.hpp>
+# include <crails/logger.hpp>
 
 namespace Crails
 {
   namespace Odb
   {
+    std::string log_sql_connection(const char* type, const Databases::DatabaseSettings& settings);
+
     inline odb::database* initialize_for_mysql(const Crails::Databases::DatabaseSettings& settings)
     {
   #ifdef CRAILS_ODB_WITH_MYSQL
+      logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::mysql::database(
         Crails::any_cast(settings.at("user")),
         Crails::any_cast(settings.at("password")),
@@ -29,6 +33,7 @@ namespace Crails
     inline odb::database* initialize_for_postgresql(const Crails::Databases::DatabaseSettings& settings)
     {
   #ifdef CRAILS_ODB_WITH_PGSQL
+      logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::pgsql::database(
         Crails::any_cast(settings.at("user")),
         Crails::any_cast(settings.at("password")),
@@ -59,6 +64,7 @@ namespace Crails
     inline odb::database* initialize_for_oracle(const Crails::Databases::DatabaseSettings& settings)
     {
   #ifdef CRAILS_ODB_WITH_ORACLE
+      logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::oracle::database(
         Crails::any_cast(settings.at("user")),
         Crails::any_cast(settings.at("password")),
