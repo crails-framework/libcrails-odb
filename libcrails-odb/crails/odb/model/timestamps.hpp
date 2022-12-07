@@ -15,7 +15,7 @@ namespace Crails
       typedef ModelSoftDelete BaseType;
     public:
       std::time_t get_created_at() const { return created_at; }
-      std::time_t get_udpated_at() const { return updated_at; }
+      std::time_t get_updated_at() const { return updated_at; }
       void update_timestamps();
 
       void save(odb::database&);
