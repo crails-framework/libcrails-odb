@@ -10,7 +10,8 @@ Odb::Connection::Connection() : transaction(Odb::Transaction::get())
 
 Odb::Connection::~Connection()
 {
-  rollback();
+  if (rollback_on_destruction)
+    rollback();
 }
 
 void Odb::Connection::commit()
