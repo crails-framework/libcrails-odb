@@ -13,11 +13,11 @@ namespace Crails
     std::string log_sql_connection(const char* type, const Databases::DatabaseSettings& settings)
     {
       return std::string("odb/") + type + ": Connecting to "
-        + Crails::any_cast("name")
+        + Crails::defaults_to<std::string>(settings, "name", "?")
         + " with user '"
-        + Crails::any_cast(settings.at("user"))
+        + Crails::defaults_to<std::string>(settings, "user", "")
         + "' and password '"
-        + Crails::any_cast(settings.at("password"))
+        + Crails::defaults_to<std::string>(settings, "password", "")
         + "'";
     }
   }
@@ -25,16 +25,21 @@ namespace Crails
 
 Databases::DatabaseSettings Odb::get_database_settings_for(const std::string& name)
 {
-  const auto& settings = Databases::settings
-    .at(Crails::environment)
-    .at(default_configuration_name);
+  try {
+    const auto& settings = Databases::settings
+      .at(Crails::environment)
+      .at(default_configuration_name);
 
-  return {
-    { "type",     settings.at("type") },
-    { "host",     settings.at("host") },
-    { "name",     name },
-    { "user",     settings.at("user") },
-    { "password", settings.at("password") },
-    { "port",     settings.at("port") }
-  };
+    return {
+      { "type",     Crails::defaults_to<std::string>(settings, "type", "sqlite") },
+      { "host",     Crails::defaults_to<std::string>(settings, "host", "localhost") },
+      { "name",     name },
+      { "user",     Crails::defaults_to<std::string>(settings, "user", "") },
+      { "password", Crails::defaults_to<std::string>(settings, "password", "") },
+      { "port",     Crails::defaults_to<unsigned short>(settings, "port", 5432) }
+    };
+  }
+  catch (const std::exception& error) {
+    throw Databases::Exception("Database not found '" + name + '\'');
+  }
 }

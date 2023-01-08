@@ -16,9 +16,9 @@ namespace Crails
   #ifdef CRAILS_ODB_WITH_MYSQL
       logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::mysql::database(
-        Crails::any_cast(settings.at("user")),
-        Crails::any_cast(settings.at("password")),
-        Crails::any_cast(settings.at("name")),
+        defaults_to<std::string>(settings, "user", "")),
+        defaults_to<std::string>(settings, "password", ""),
+        defaults_to<std::strign>(settings, "name", "crails_db"),
         defaults_to<const char*> (settings, "host", ""),
         defaults_to<unsigned int>(settings, "port", 0)
         0,
@@ -35,11 +35,11 @@ namespace Crails
   #ifdef CRAILS_ODB_WITH_PGSQL
       logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::pgsql::database(
-        Crails::any_cast(settings.at("user")),
-        Crails::any_cast(settings.at("password")),
-        Crails::any_cast(settings.at("name")),
+        defaults_to<std::string>(settings, "user", ""),
+        defaults_to<std::string>(settings, "password", ""),
+        defaults_to<std::string>(settings, "name", "crails_db"),
         defaults_to<const char*> (settings, "host",  ""),
-        defaults_to<unsigned int>(settings, "port",  0),
+        defaults_to<unsigned int>(settings, "port",  5432),
         defaults_to<const char*> (settings, "extra", "")
       );
   #else
@@ -52,7 +52,7 @@ namespace Crails
     {
   #ifdef CRAILS_ODB_WITH_SQLITE
       return new odb::sqlite::database(
-        Crails::any_cast(settings.at("name")),
+        defaults_to<std::string>(settings, "name", "crails_db"),
         SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
       );
   #else
@@ -66,9 +66,9 @@ namespace Crails
   #ifdef CRAILS_ODB_WITH_ORACLE
       logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::oracle::database(
-        Crails::any_cast(settings.at("user")),
-        Crails::any_cast(settings.at("password")),
-        Crails::any_cast(settings.at("name")),
+        defaults_to<std::string>(settings, "user", ""),
+        defaults_to<std::string>(settings, "password", ""),
+        defaults_to<std::string>(settings, "name", "crails_db"),
         defaults_to<const char*> (settings, "host", ""),
         defaults_to<unsigned int>(settings, "port", 0)
       );

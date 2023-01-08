@@ -19,9 +19,10 @@ static string pgsql_command_prefix(const Crails::Databases::DatabaseSettings& da
   command += " -h " + string(Crails::any_cast(database_config.at("host")));
   if (database_config.count("port"))
     command += " -p " + lexical_cast<string>(any_cast<unsigned int>(database_config.at("port")));
-  command += " -U " + user;
+  if (user.length())
+    command += " -U " + user;
   command += " -c ";
-  if (password != "")
+  if (password.length())
     command = "PGPASSWORD=\"" + password + "\" " + command;
   return command;
 }

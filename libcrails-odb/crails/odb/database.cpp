@@ -35,7 +35,7 @@ Database::Database(const Databases::DatabaseSettings& settings) : Databases::Dat
     if (db == NULL)
       throw boost_ext::runtime_error("could not initialize database " + name);
   }
-  database_name = Crails::any_cast(settings.at("name"));
+  database_name = Crails::defaults_to<std::string>(settings, "name", "crails_db");
 }
 
 void Database::connect()
