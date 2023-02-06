@@ -1,6 +1,7 @@
 #ifndef  MODEL_HELPERS_HPP
 # define MODEL_HELPERS_HPP
 
+# include <crails/utils/type_traits.hpp>
 # include <crails/utils/arrays.hpp>
 # include <crails/datatree.hpp>
 # include <list>
@@ -12,11 +13,31 @@
 #  include "connection.hpp"
 # endif
 
+template<typename MODELS, typename ELEMENT = typename MODELS::value_type, bool is_pointer = std::is_pointer<ELEMENT>::value || Crails::is_specialization<ELEMENT, std::shared_ptr>::value>
+struct OdbHelperIdCollector
+{
+  static std::vector<Crails::Odb::id_type> run(const MODELS& models)
+  {
+    typedef typename MODELS::value_type Model;
+    return Crails::collect(models, &Model::get_id);
+  }
+};
+
+template<typename MODELS, typename ELEMENT>
+struct OdbHelperIdCollector<MODELS, ELEMENT, true>
+{
+  static std::vector<Crails::Odb::id_type> run(const MODELS& models)
+  {
+    typedef typename MODELS::value_type ModelPointer;
+    typedef typename std::pointer_traits<ModelPointer>::element_type Model;
+    return Crails::collect(models, &Model::get_id);
+  }
+};
+
 template<typename MODELS>
 std::vector<Crails::Odb::id_type> collect_ids_from(const MODELS& models)
 {
-  typedef typename MODELS::value_type Model;
-  return Crails::collect(models, &Model::get_id);
+  return OdbHelperIdCollector<MODELS>::run(models);
 }
 
 template<typename MODEL>
