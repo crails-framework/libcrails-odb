@@ -9,7 +9,7 @@ namespace Crails
   namespace Odb
   {
     template<typename ARRAY>
-    std::string array_to_string(const ARRAY& array, const std::string& sql_type)
+    std::string array_to_string(const ARRAY& array, const std::string& sql_type = "")
     {
       std::stringstream stream;
 
@@ -20,12 +20,14 @@ namespace Crails
           stream << ',';
         stream << *it;
       }
-      stream << "}'::" << sql_type << "[]";
+      stream << "}'";
+      if (sql_type.length())
+        stream << "::" << sql_type << "[]";
       return stream.str();
     }
 
     template<typename ARRAY>
-    std::string any(const ARRAY& array, const std::string& sql_type)
+    std::string any(const ARRAY& array, const std::string& sql_type = "")
     {
       return "ANY(" + array_to_string(array, sql_type) + ')';
     }
