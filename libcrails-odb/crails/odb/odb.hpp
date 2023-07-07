@@ -2,7 +2,11 @@
 # define CRAILS_ODB_IMPORTS_HPP
 
 # include <odb/database.hxx>
+
+# ifndef TWILIDOC
 # include "backends.hpp"
+# endif
+
 # ifdef CRAILS_ODB_WITH_MYSQL
 #  include <odb/mysql/database.hxx>
 # endif
