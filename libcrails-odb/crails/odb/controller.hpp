@@ -3,6 +3,7 @@
 
 # include <crails/controller.hpp>
 # include <crails/http_response.hpp>
+# include <crails/logger.hpp>
 # include "connection.hpp"
 
 namespace Crails
@@ -20,11 +21,18 @@ namespace Crails
       {
       }
 
-      void finalize() override
+      virtual void finalize() override
       {
-        SUPER::finalize();
-        if (static_cast<int>(SUPER::response.get_status_code()) < 400)
+        auto status = static_cast<int>(SUPER::response.get_status_code());
+
+        if (status < 400)
+	{
+	  logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": committing changes.";
           database.commit();
+	}
+	else
+          logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": changes will rollback."
+        SUPER::finalize();
       }
     };
   }
