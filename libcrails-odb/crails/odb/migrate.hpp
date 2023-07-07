@@ -4,6 +4,7 @@
 # include "odb.hpp"
 # include <map>
 # include <crails/logger.hpp>
+# include <crails/utils/backtrace.hpp>
 # include <odb/schema-catalog.hxx>
 
 namespace Crails
