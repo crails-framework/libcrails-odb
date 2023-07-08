@@ -27,11 +27,11 @@ namespace Crails
 
         if (status < 400)
 	{
-	  logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": committing changes.";
+	  logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": committing changes." << Logger::endl;
           database.commit();
 	}
 	else
-          logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": changes will rollback."
+          logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": changes will rollback." << Logger::endl;
         SUPER::finalize();
       }
     };
