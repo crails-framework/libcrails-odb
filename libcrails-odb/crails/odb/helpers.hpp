@@ -40,78 +40,127 @@ std::vector<Crails::Odb::id_type> collect_ids_from(const MODELS& models)
   return OdbHelperIdCollector<MODELS>::run(models);
 }
 
-template<typename MODEL>
-bool update_id_list(
-  std::vector<Crails::Odb::id_type>& model_list,
-  Data model_ids)
+/*
+ * Updates a list of IDs using a id array stored in a DataTree
+ */
+template<typename MODEL, typename LIST, bool IS_AN_ID_LIST = std::is_same<typename LIST::value_type, Crails::Odb::id_type>::value>
+class IdListDataUpdater
 {
-  auto ids = Crails::unique_list<std::vector<Crails::Odb::id_type> >(model_ids);
-
-  for (auto it = model_list.begin() ; it != model_list.end() ;)
+  IdListDataUpdater() = delete;
+public:
+  static bool update_id_list(LIST& id_list, Data model_ids)
   {
-    auto exists_in_new_list = std::find(ids.begin(), ids.end(), *it);
+    LIST ids = Crails::unique_list<LIST>(model_ids);
 
-    if (exists_in_new_list == ids.end())
-      it = model_list.erase(it);
-    else
+    wipe_removed_ids(ids, id_list);
+    return aggregate_new_ids(ids, id_list);
+  }
+private:
+  static void wipe_removed_ids(LIST& input, LIST& output)
+  {
+    for (auto it = output.begin() ; it != output.end() ;)
     {
-      ids.erase(exists_in_new_list);
-      it++;
+      auto exists_in_new_list = std::find(input.begin(), input.end(), *it);
+
+      if (exists_in_new_list == input.end())
+        it = output.erase(it);
+      else
+      {
+        input.erase(exists_in_new_list);
+        it++;
+      }
     }
   }
 
-# if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
-  Crails::Odb::Connection database;
-
-  for (Crails::Odb::id_type id : ids)
+  static bool aggregate_new_ids(const LIST& input, LIST& output)
   {
-    std::shared_ptr<MODEL> model;
+  # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
+    Crails::Odb::Connection database;
 
-    if (!database.find_one(model, odb::query<MODEL>::id == id))
-      return false;
-    model_list.push_back(id);
+    for (Crails::Odb::id_type id : input)
+    {
+      std::shared_ptr<MODEL> model;
+
+      if (!database.find_one(model, odb::query<MODEL>::id == id))
+        return false;
+      output.push_back(id);
+    }
+  # else
+    for (Crails::Odb::id_type id : input)
+      output.push_back(id);
+  # endif
+    return true;
   }
-# else
-  for (Crails::Odb::id_type id : ids)
-    model_list.push_back(id);
-# endif
-  return true;
-}
+};
 
-template<typename MODEL>
-bool update_id_list(
-  std::list<std::shared_ptr<MODEL> >& model_list,
-  Data model_ids)
+/*
+ * Updates a list of models using an id array stored in a DataTree
+ */
+template<typename MODEL, typename LIST>
+class IdListDataUpdater<MODEL, LIST, false> // list is assumed to be a list of pointers to models
 {
-  auto ids = update_id_list(
-    Crails::collect(model_list, &MODEL::get_id),
-    model_ids
-  );
-
-# if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
-  Crails::Odb::Connection database;
-
-  for (Crails::Odb::id_type id : ids)
+  IdListDataUpdater() = delete;
+public:
+  static bool update_id_list(LIST& model_list, Data model_ids)
   {
-    std::shared_ptr<MODEL> model;
+    auto ids = Crails::unique_list<std::vector<Crails::Odb::id_type>>(model_ids);
 
-    if (!database.find_one(model, odb::query<MODEL>::id == id))
-      return false;
-    model_list.push_back(model);
+    wipe_removed_ids(ids, model_list);
+    return aggregate_new_ids(ids, model_list);
   }
-# elif defined(__COMET_CLIENT__)
-  for (Crails::Odb::id_type id : ids)
+private:
+  static void wipe_removed_ids(std::vector<Crails::Odb::id_type>& input, LIST& output)
   {
-    std::shared_ptr<MODEL> model = std::make_shared<MODEL>();
+    for (auto it = output.begin() ; it != output.end() ;)
+    {
+      auto exists_in_new_list = std::find(input.begin(), input.end(), (*it)->get_id());
 
-    model->set_id(id);
-#  ifdef COMET_MODELS_AUTOFETCH
-    model->fetch();
-#  endif
-    model_list.push_back(model);
+      if (exists_in_new_list == input.end())
+        it = output.erase(it);
+      else
+      {
+        input.erase(exists_in_new_list);
+        it++;
+      }
+    }
   }
-# endif
-  return true;
+
+  static bool aggregate_new_ids(const std::vector<Crails::Odb::id_type>& input, LIST& output)
+  {
+  # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
+    Crails::Odb::Connection database;
+
+    for (Crails::Odb::id_type id : input)
+    {
+      std::shared_ptr<MODEL> model;
+
+      if (!database.find_one(model, odb::query<MODEL>::id == id))
+        return false;
+      output.push_back(model);
+    }
+  # elif defined(__COMET_CLIENT__)
+    for (Crails::Odb::id_type id : input)
+    {
+      std::shared_ptr<MODEL> model = std::make_shared<MODEL>();
+
+      model->set_id(id);
+  #  ifdef COMET_MODELS_AUTOFETCH
+      model->fetch();
+  #  endif
+      output.push_back(model);
+    }
+  # endif
+    return true;
+  }
+};
+
+/*
+ * Applies a Data value to a relationship property, regardless of whether the relationship is joined (represented by a list of objects) or not (represented by an id list).
+ */
+template<typename MODEL, typename LIST>
+bool update_id_list(LIST& model_list, Data model_ids)
+{
+  IdListDataUpdater<MODEL, LIST>::update_id_list(model_list, model_ids);
 }
 
 #endif
