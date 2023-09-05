@@ -29,3 +29,29 @@ void Odb::Connection::rollback()
   transaction.rollback();
   time = 0.f;
 }
+
+bool Odb::Connection::recoverable_action(std::function<bool()> action) const
+{
+  try
+  {
+    return action();
+  }
+  catch (const odb::recoverable& err)
+  {
+    logger << Logger::Warning << "Repeating recoverable database operation: " << err.what() << Logger::endl;
+    return action();
+  }
+}
+
+unsigned long Odb::Connection::recoverable_count(std::function<unsigned long()> action) const
+{
+  try
+  {
+    return action();
+  }
+  catch (const odb::recoverable& err)
+  {
+    logger << Logger::Warning << "Repeating recoverable database count operation: " << err.what() << Logger::endl;
+    return action();
+  }
+}
