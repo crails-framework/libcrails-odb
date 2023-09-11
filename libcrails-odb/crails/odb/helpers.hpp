@@ -160,7 +160,7 @@ private:
 template<typename MODEL, typename LIST>
 bool update_id_list(LIST& model_list, Data model_ids)
 {
-  IdListDataUpdater<MODEL, LIST>::update_id_list(model_list, model_ids);
+  return IdListDataUpdater<MODEL, LIST>::update_id_list(model_list, model_ids);
 }
 
 #endif

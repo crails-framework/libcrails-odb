@@ -42,7 +42,7 @@ namespace Crails
       template<typename MODEL>
       unsigned long count(odb::query<MODEL> query = odb::query<MODEL>(true))
       {
-        return recoverable_count([=]() -> unsigned long
+        return recoverable_count([this, query]() -> unsigned long
         {
           Utils::TimeGuard timer(time);
 
@@ -55,7 +55,7 @@ namespace Crails
       template<typename MODEL_PTR>
       bool find_one(MODEL_PTR& model, odb::query<typename MODEL_PTR::element_type> query = odb::query<typename MODEL_PTR::element_type>(true))
       {
-        return recoverable_action([=]() -> bool
+        return recoverable_action([this, &model, query]() -> bool
         {
           typedef typename MODEL_PTR::element_type MODEL;
           Utils::TimeGuard timer(time);
@@ -75,7 +75,7 @@ namespace Crails
       template<typename MODEL>
       bool find(odb::result<MODEL>& results, odb::query<MODEL> query = odb::query<MODEL>(true))
       {
-        return recoverable_action([=]() -> bool
+        return recoverable_action([this, &results, query]() -> bool
         {
           Utils::TimeGuard timer(time);
 
@@ -88,20 +88,21 @@ namespace Crails
       template<typename MODEL>
       void save(MODEL& model)
       {
-        return recoverable_action([=]() -> bool
+        recoverable_action([this, &model]() -> bool
         {
           Utils::TimeGuard timer(time);
           start_transaction_for(model);
           model.before_save();
           model.save(transaction.get_database());
           model.after_save();
+          return true;
         });
       }
 
       template<typename MODEL>
       void destroy(MODEL& model)
       {
-        return recoverable_action([=]() -> bool
+        recoverable_action([this, &model]() -> bool
         {
           Utils::TimeGuard timer(time);
 
@@ -116,13 +117,14 @@ namespace Crails
           {
             Odb::throw_exception(model, e.what());
           }
+          return true;
         });
       }
 
       template<typename MODEL>
       void destroy(odb::query<MODEL> query = odb::query<MODEL>(true))
       {
-        return recoverable_action([=]() -> bool
+        recoverable_action([this, query]() -> bool
         {
           odb::result<MODEL> results;
 
@@ -131,6 +133,7 @@ namespace Crails
             for (auto& model : results)
               destroy(model);
           }
+          return true;
         });
       }
 
