@@ -26,9 +26,10 @@ namespace Crails
 Databases::DatabaseSettings Odb::get_database_settings_for(const std::string& name)
 {
   try {
-    const auto& settings = Databases::settings
-      .at(Crails::environment)
-      .at(default_configuration_name);
+    const Databases::DatabaseSettings& settings =
+      Databases::settings
+        .at(Crails::environment)
+        .at(default_configuration_name);
 
     return {
       { "type",     Crails::defaults_to<std::string>(settings, "type", "sqlite") },
@@ -36,7 +37,7 @@ Databases::DatabaseSettings Odb::get_database_settings_for(const std::string& na
       { "name",     name },
       { "user",     Crails::defaults_to<std::string>(settings, "user", "") },
       { "password", Crails::defaults_to<std::string>(settings, "password", "") },
-      { "port",     Crails::defaults_to<unsigned short>(settings, "port", 5432) }
+      { "port",     Crails::defaults_to<unsigned int>(settings, "port", 5432) }
     };
   }
   catch (const std::exception& error) {

@@ -18,8 +18,8 @@ namespace Crails
       return new odb::mysql::database(
         defaults_to<std::string>(settings, "user", "")),
         defaults_to<std::string>(settings, "password", ""),
-        defaults_to<std::strign>(settings, "name", "crails_db"),
-        defaults_to<const char*> (settings, "host", ""),
+        defaults_to<std::string>(settings, "name", "crails_db"),
+        defaults_to<std::string>(settings, "host", ""),
         defaults_to<unsigned int>(settings, "port", 0)
         0,
         defaults_to<const char*>(settings, "charset", "")
@@ -38,9 +38,9 @@ namespace Crails
         defaults_to<std::string>(settings, "user", ""),
         defaults_to<std::string>(settings, "password", ""),
         defaults_to<std::string>(settings, "name", "crails_db"),
-        defaults_to<const char*> (settings, "host",  ""),
+        defaults_to<std::string>(settings, "host",  ""),
         defaults_to<unsigned int>(settings, "port",  5432),
-        defaults_to<const char*> (settings, "extra", "")
+        defaults_to<std::string>(settings, "extra", "")
       );
   #else
       throw boost_ext::runtime_error("libcrails-odb was built without support for `pgsql`");
@@ -69,7 +69,7 @@ namespace Crails
         defaults_to<std::string>(settings, "user", ""),
         defaults_to<std::string>(settings, "password", ""),
         defaults_to<std::string>(settings, "name", "crails_db"),
-        defaults_to<const char*> (settings, "host", ""),
+        defaults_to<std::string>(settings, "host", ""),
         defaults_to<unsigned int>(settings, "port", 0)
       );
   #else

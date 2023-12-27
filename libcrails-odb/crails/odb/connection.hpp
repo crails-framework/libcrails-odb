@@ -49,7 +49,7 @@ namespace Crails
           start_transaction_for<MODEL>();
           return transaction.get_database()
             .query_value<typename MODEL::Count>(query).value;
-	});
+        });
       }
 
       template<typename MODEL_PTR>
