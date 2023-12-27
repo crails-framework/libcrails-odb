@@ -58,6 +58,7 @@ void Odb::Transaction::start(const std::string& name, odb::database& database)
     odb_transaction = unique_ptr<odb::transaction>(
       new odb::transaction(database.begin())
     );
+    odb_session.reset();
     if (use_session)
       odb_session   = unique_ptr<odb::session>(new odb::session);
     odb_database    = &database;
