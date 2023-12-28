@@ -26,11 +26,11 @@ namespace Crails
         auto status = static_cast<int>(SUPER::response.get_status_code());
 
         if (status < 400)
-	{
-	  logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": committing changes." << Logger::endl;
+        {
+          logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": committing changes." << Logger::endl;
           database.commit();
-	}
-	else
+        }
+      	else
           logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": changes will rollback." << Logger::endl;
         SUPER::finalize();
       }

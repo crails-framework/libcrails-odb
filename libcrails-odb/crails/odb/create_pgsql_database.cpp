@@ -22,6 +22,7 @@ static string pgsql_command_prefix(const Crails::Databases::DatabaseSettings& da
   if (user.length())
     command += " -U " + user;
   command += " -c ";
+
   if (password.length())
     command = "PGPASSWORD=\"" + password + "\" " + command;
   return command;
