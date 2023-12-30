@@ -27,7 +27,7 @@ Databases::DatabaseSettings Odb::get_database_settings_for(const std::string& na
 {
   try {
     const Databases::DatabaseSettings& settings =
-      Databases::settings
+      Databases::Settings::singleton::require()
         .at(Crails::environment)
         .at(default_configuration_name);
 
