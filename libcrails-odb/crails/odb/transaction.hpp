@@ -17,6 +17,8 @@ namespace Crails
   {
     struct Transaction
     {
+      static bool use_session;
+
       Transaction();
       ~Transaction();
 
@@ -32,8 +34,6 @@ namespace Crails
 
     private:
       void cleanup();
-
-      static const bool use_session;
 
       std::string                       database_name;
       std::unique_ptr<odb::transaction> odb_transaction;

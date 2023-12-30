@@ -11,6 +11,7 @@ using namespace std;
 using namespace Crails;
 
 extern const std::string default_configuration_name;
+bool Odb::Transaction::use_session = false;
 
 Odb::Transaction::Transaction() : odb_database(0)
 {
