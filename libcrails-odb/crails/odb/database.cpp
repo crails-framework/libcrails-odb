@@ -30,9 +30,13 @@ Database::Database(const Databases::DatabaseSettings& settings) : Databases::Dat
     throw UnknownBackend(backend_str);
   else
   {
-    backend = backend_it->second;
-    db      = std::unique_ptr<odb::database>(initializers.at(backend)(settings));
-    if (db == NULL)
+    auto initializer_it = initializers.find(backend_it->second);
+
+    if (initializer_it != initializers.end())
+      db = std::unique_ptr<odb::database>(initializers.at(backend)(settings));
+    else
+      throw boost_ext::runtime_error("no initializer found for " + backend_str);
+    if (db == nullptr)
       throw boost_ext::runtime_error("could not initialize database " + name);
   }
   database_name = Crails::defaults_to<string>(settings, "name", "crails_db");
