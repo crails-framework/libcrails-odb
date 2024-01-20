@@ -30,6 +30,17 @@ void Odb::Connection::rollback()
   time = 0.f;
 }
 
+bool Odb::Connection::execute(std::string_view query)
+{
+  return recoverable_action([this, query]() -> bool
+  {
+    unsigned long affected_rows;
+
+    affected_rows = transaction.get_database().execute(query.data(), query.length());
+    return affected_rows > 0;
+  });
+}
+
 bool Odb::Connection::recoverable_action(std::function<bool()> action) const
 {
   try

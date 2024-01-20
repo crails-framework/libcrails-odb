@@ -6,6 +6,7 @@
 # include <odb/result.hxx>
 # include <odb/database.hxx>
 # include "query.hpp"
+# include "query_stream.hpp"
 # include "transaction.hpp"
 # include "exception.hpp"
 # include "id_type.hpp"
@@ -38,6 +39,16 @@ namespace Crails
       void commit();
       void rollback();
       bool recoverable_action(std::function<bool()> action) const;
+      bool execute(std::string_view);
+
+      template<typename... ARGS>
+      bool execute(std::string_view query, ARGS... args)
+      {
+        QueryStream stream;
+
+        stream.make(query, args...);
+        return execute(stream.output.c_str(), stream.output.length());
+      }
 
       template<typename MODEL>
       unsigned long count(odb::query<MODEL> query = odb::query<MODEL>(true))
