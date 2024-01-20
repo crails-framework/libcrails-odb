@@ -151,6 +151,15 @@ namespace Crails
       bool rollback_on_destruction = true;
       Transaction& transaction;
     };
+
+    class ConnectionHandle : public Connection
+    {
+    public:
+      ConnectionHandle()
+      {
+        rollback_on_destruction = false;
+      }
+    };
   }
 }
 
