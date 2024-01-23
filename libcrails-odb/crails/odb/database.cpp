@@ -33,7 +33,10 @@ Database::Database(const Databases::DatabaseSettings& settings) : Databases::Dat
     auto initializer_it = initializers.find(backend_it->second);
 
     if (initializer_it != initializers.end())
-      db = std::unique_ptr<odb::database>(initializers.at(backend)(settings));
+    {
+      backend = backend_it->second;
+      db = std::unique_ptr<odb::database>((initializer_it->second)(settings));
+    }
     else
       throw boost_ext::runtime_error("no initializer found for " + backend_str);
     if (db == nullptr)
