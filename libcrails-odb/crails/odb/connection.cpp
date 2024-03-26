@@ -47,10 +47,20 @@ bool Odb::Connection::recoverable_action(std::function<bool()> action) const
   {
     return action();
   }
+  catch (const odb::connection_lost& err)
+  {
+    logger << Logger::Warning << "Connection was closed by the SQL server. Reconnecting and retrying." << Logger::endl;
+    return action();
+  }
   catch (const odb::recoverable& err)
   {
     logger << Logger::Warning << "Repeating recoverable database operation: " << err.what() << Logger::endl;
     return action();
+  }
+  catch (const std::exception& err)
+  {
+    logger << Logger::Error << "Catched non-recoverable exception from recoverable action: " << err.what() << Logger::endl;
+    throw boost_ext::runtime_error(err.what());
   }
 }
 
@@ -60,9 +70,20 @@ unsigned long Odb::Connection::recoverable_count(std::function<unsigned long()> 
   {
     return action();
   }
+  catch (const odb::connection_lost& err)
+  {
+    logger << Logger::Warning << "Connection was closed by the SQL server. Reconnecting and retrying." << Logger::endl;
+    return action();
+  }
   catch (const odb::recoverable& err)
   {
     logger << Logger::Warning << "Repeating recoverable database count operation: " << err.what() << Logger::endl;
     return action();
   }
+  catch (const odb::exception& err)
+  {
+    logger << Logger::Error << "Catched non-recoverable exception from recoverable action: " << err.what() << Logger::endl;
+    throw boost_ext::runtime_error(err.what());
+  }
+  return 0;
 }
