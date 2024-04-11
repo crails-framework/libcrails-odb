@@ -14,3 +14,4 @@ depends: libodb-pgsql  ^2.5.0-b.23 ? ($config.libcrails_odb.odb_with_pgsql == tr
 depends: libodb-mysql  ^2.5.0-b.23 ? ($config.libcrails_odb.odb_with_mysql == true)
 depends: libodb-oracle ^2.5.0-b.23 ? ($config.libcrails_odb.odb_with_oracle == true)
 depends: { libcrails libcrails-databases } ^2.0.0
+depends: libbacktrace ^1.0.0
