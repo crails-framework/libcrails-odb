@@ -16,7 +16,7 @@ static string pgsql_command_prefix(const Crails::Databases::DatabaseSettings& da
 {
   string command("psql");
 
-  command += " -h " + string(Crails::any_cast(database_config.at("host")));
+  command += " -h " + string(Any<string>::cast(database_config.at("host")));
   if (database_config.count("port"))
     command += " -p " + lexical_cast<string>(any_cast<unsigned int>(database_config.at("port")));
   if (user.length())
@@ -31,9 +31,9 @@ static string pgsql_command_prefix(const Crails::Databases::DatabaseSettings& da
 static void initialize_credentials(const Crails::Databases::DatabaseSettings& database_config, std::string& db_user, std::string& db_password, std::string& user, std::string& password)
 {
   if (database_config.count("user"))
-    db_user = Crails::any_cast(database_config.at("user"));
+    db_user = Any<string>::cast(database_config.at("user"));
   if (database_config.count("password"))
-    db_password = Crails::any_cast(database_config.at("password"));
+    db_password = Any<string>::cast(database_config.at("password"));
   if (user == "")
   {
     user     = db_user;
@@ -44,7 +44,7 @@ static void initialize_credentials(const Crails::Databases::DatabaseSettings& da
 static bool pgsql_run_queries(const Crails::Databases::DatabaseSettings& database_config, std::string user, std::string password, std::list<std::string> queries, bool ignore_failure = false)
 {
   string db_user, db_password;
-  string db_name = Crails::any_cast(database_config.at("name"));
+  string db_name = Any<string>::cast(database_config.at("name"));
   string command;
 
   initialize_credentials(database_config, db_user, db_password, user, password);
@@ -91,7 +91,7 @@ static bool pgsql_run_queries(const Crails::Databases::DatabaseSettings& databas
 bool pgsql_create_from_settings(const Crails::Databases::DatabaseSettings& database_config, std::string user, std::string password)
 {
   string db_user, db_password;
-  string db_name = Crails::any_cast(database_config.at("name"));
+  string db_name = Any<string>::cast(database_config.at("name"));
   list<string> queries;
 
   initialize_credentials(database_config, db_user, db_password, user, password);
@@ -110,7 +110,7 @@ bool pgsql_create_from_settings(const Crails::Databases::DatabaseSettings& datab
 
 bool pgsql_drop_from_settings(const Crails::Databases::DatabaseSettings& database_config, std::string user, std::string password)
 {
-  string       db_name = Crails::any_cast(database_config.at("name"));
+  string       db_name = Any<string>::cast(database_config.at("name"));
   list<string> queries;
 
   queries.push_back("update pg_database set datallowconn = 'false' where datname = '" + db_name + "';");

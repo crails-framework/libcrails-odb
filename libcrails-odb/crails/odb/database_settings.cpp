@@ -1,6 +1,6 @@
 #include "database_settings.hpp"
 #include <crails/environment.hpp>
-#include <crails/any_cast.hpp>
+#include <crails/shared_vars.hpp>
 
 using namespace Crails;
 
@@ -13,11 +13,11 @@ namespace Crails
     std::string log_sql_connection(const char* type, const Databases::DatabaseSettings& settings)
     {
       return std::string("odb/") + type + ": Connecting to "
-        + Crails::defaults_to<std::string>(settings, "name", "?")
+        + Crails::cast<std::string>(settings, "name", "?")
         + " with user '"
-        + Crails::defaults_to<std::string>(settings, "user", "")
+        + Crails::cast<std::string>(settings, "user", "")
         + "' and password '"
-        + Crails::defaults_to<std::string>(settings, "password", "")
+        + Crails::cast<std::string>(settings, "password", "")
         + "'";
     }
   }
@@ -32,12 +32,12 @@ Databases::DatabaseSettings Odb::get_database_settings_for(const std::string& na
         .at(default_configuration_name);
 
     return {
-      { "type",     Crails::defaults_to<std::string>(settings, "type", "sqlite") },
-      { "host",     Crails::defaults_to<std::string>(settings, "host", "localhost") },
+      { "type",     Crails::cast<std::string>(settings, "type", "sqlite") },
+      { "host",     Crails::cast<std::string>(settings, "host", "localhost") },
       { "name",     name },
-      { "user",     Crails::defaults_to<std::string>(settings, "user", "") },
-      { "password", Crails::defaults_to<std::string>(settings, "password", "") },
-      { "port",     Crails::defaults_to<unsigned int>(settings, "port", 5432) }
+      { "user",     Crails::cast<std::string>(settings, "user", "") },
+      { "password", Crails::cast<std::string>(settings, "password", "") },
+      { "port",     Crails::cast<unsigned int>(settings, "port", 5432) }
     };
   }
   catch (const std::exception& error) {

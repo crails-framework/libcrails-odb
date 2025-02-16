@@ -1,7 +1,7 @@
 intf_libs = # Interface dependencies.
 impl_libs = # Implementation dependencies.
-import intf_libs += libodb%lib{odb}
 import intf_libs += libcrails%lib{crails}
+import intf_libs += libcrails-any%lib{crails-any}
 import intf_libs += libcrails-databases%lib{crails-databases}
 import intf_libs += libbacktrace%lib{backtrace}
 

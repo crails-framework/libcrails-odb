@@ -23,7 +23,7 @@ const Database::Initializers Database::initializers = {
 
 Database::Database(const Databases::DatabaseSettings& settings) : Databases::Database(ClassType())
 {
-  const string backend_str = defaults_to<string>(settings, "type", "sqlite");
+  const string backend_str = cast<string>(settings, "type", "sqlite");
   auto         backend_it  = database_types_to_string.find(backend_str);
 
   if (backend_it == database_types_to_string.end())
@@ -42,7 +42,7 @@ Database::Database(const Databases::DatabaseSettings& settings) : Databases::Dat
     if (db == nullptr)
       throw boost_ext::runtime_error("could not initialize database " + name);
   }
-  database_name = Crails::defaults_to<string>(settings, "name", "crails_db");
+  database_name = Crails::cast<string>(settings, "name", "crails_db");
 }
 
 void Database::connect()
@@ -57,7 +57,7 @@ bool pgsql_drop_from_settings(const Crails::Databases::DatabaseSettings&, std::s
 
 bool Database::drop_with_settings(const Crails::Databases::DatabaseSettings& settings, std::string user, std::string password)
 {
-  const string backend_str = defaults_to<string>(settings, "type", "sqlite");
+  const string backend_str = cast<string>(settings, "type", "sqlite");
   auto         backend_it  = database_types_to_string.find(backend_str);
 
   if (backend_it == database_types_to_string.end())
@@ -82,7 +82,7 @@ bool Database::drop_with_settings(const Crails::Databases::DatabaseSettings& set
 
 bool Database::create_from_settings(const Crails::Databases::DatabaseSettings& settings, std::string user, std::string password)
 {
-  const string backend_str = defaults_to<string>(settings, "type", "sqlite");
+  const string backend_str = cast<string>(settings, "type", "sqlite");
   auto         backend_it  = database_types_to_string.find(backend_str);
 
   if (backend_it == database_types_to_string.end())

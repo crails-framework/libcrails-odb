@@ -2,7 +2,7 @@
 # define CRAILS_ODB_DATABASE_LOADERS_HPP
 
 # include "database.hpp"
-# include <crails/any_cast.hpp>
+# include <crails/shared_vars.hpp>
 # include <crails/logger.hpp>
 
 namespace Crails
@@ -16,13 +16,13 @@ namespace Crails
   #ifdef CRAILS_ODB_WITH_MYSQL
       logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::mysql::database(
-        defaults_to<std::string>(settings, "user", "")),
-        defaults_to<std::string>(settings, "password", ""),
-        defaults_to<std::string>(settings, "name", "crails_db"),
-        defaults_to<std::string>(settings, "host", ""),
-        defaults_to<unsigned int>(settings, "port", 0)
+        cast<std::string>(settings, "user", "")),
+        cast<std::string>(settings, "password", ""),
+        cast<std::string>(settings, "name", "crails_db"),
+        cast<std::string>(settings, "host", ""),
+        cast<unsigned int>(settings, "port", 0)
         0,
-        defaults_to<const char*>(settings, "charset", "")
+        cast<const char*>(settings, "charset", "")
       );
   #else
       throw boost_ext::runtime_error("libcrails-odb was built without support for `mysql`");
@@ -35,12 +35,12 @@ namespace Crails
   #ifdef CRAILS_ODB_WITH_PGSQL
       logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::pgsql::database(
-        defaults_to<std::string>(settings, "user", ""),
-        defaults_to<std::string>(settings, "password", ""),
-        defaults_to<std::string>(settings, "name", "crails_db"),
-        defaults_to<std::string>(settings, "host",  ""),
-        defaults_to<unsigned int>(settings, "port",  5432),
-        defaults_to<std::string>(settings, "extra", "")
+        cast<std::string>(settings, "user", ""),
+        cast<std::string>(settings, "password", ""),
+        cast<std::string>(settings, "name", "crails_db"),
+        cast<std::string>(settings, "host",  ""),
+        cast<unsigned int>(settings, "port",  5432),
+        cast<std::string>(settings, "extra", "")
       );
   #else
       throw boost_ext::runtime_error("libcrails-odb was built without support for `pgsql`");
@@ -52,7 +52,7 @@ namespace Crails
     {
   #ifdef CRAILS_ODB_WITH_SQLITE
       return new odb::sqlite::database(
-        defaults_to<std::string>(settings, "name", "crails_db"),
+        cast<std::string>(settings, "name", "crails_db"),
         SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
       );
   #else
@@ -66,11 +66,11 @@ namespace Crails
   #ifdef CRAILS_ODB_WITH_ORACLE
       logger << Logger::Debug << std::bind(log_sql_connection, "sql", settings) << Logger::endl;
       return new odb::oracle::database(
-        defaults_to<std::string>(settings, "user", ""),
-        defaults_to<std::string>(settings, "password", ""),
-        defaults_to<std::string>(settings, "name", "crails_db"),
-        defaults_to<std::string>(settings, "host", ""),
-        defaults_to<unsigned int>(settings, "port", 0)
+        cast<std::string>(settings, "user", ""),
+        cast<std::string>(settings, "password", ""),
+        cast<std::string>(settings, "name", "crails_db"),
+        cast<std::string>(settings, "host", ""),
+        cast<unsigned int>(settings, "port", 0)
       );
   #else
       throw boost_ext::runtime_error("libcrails-odb was built without support for `oracle`");
