@@ -7,6 +7,9 @@ namespace Crails
 {
   namespace Odb
   {
+#ifdef __COMET_CLIENT__
+    typedef ModelBase ModelSoftDelete;
+#else
     # pragma db object abstract
     class ModelSoftDelete : public ModelBase
     {
@@ -23,6 +26,7 @@ namespace Crails
       #pragma db default(false)
       bool deleted;
     };
+#endif
   }
 }
 

@@ -18,10 +18,13 @@ namespace Crails
       std::time_t get_updated_at() const { return updated_at; }
       void set_created_at(std::time_t value) { created_at = value; }
       void set_updated_at(std::time_t value) { updated_at = value; }
+
+#ifndef __COMET_CLIENT__
       void update_timestamps();
 
       void save(odb::database&);
       void destroy(odb::database&);
+#endif
 
     private:
       #pragma db null
