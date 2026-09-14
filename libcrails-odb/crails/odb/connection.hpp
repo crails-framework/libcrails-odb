@@ -47,7 +47,7 @@ namespace Crails
         QueryStream stream;
 
         stream.make(query, args...);
-        return execute(stream.output.c_str(), stream.output.length());
+        return execute(std::string_view(stream.output.c_str(), stream.output.length()));
       }
 
       template<typename MODEL>
