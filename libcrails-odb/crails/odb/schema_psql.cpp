@@ -5,7 +5,7 @@
 #include <odb/database.hxx>
 #include <odb/pgsql/database.hxx>
 #include <odb/pgsql/connection.hxx>
-#include <libpq-fe.h>
+#include <postgresql/libpq-fe.h>
 #include <algorithm>
 #include <cctype>
 #include <iostream>
