@@ -10,6 +10,7 @@
 #include <cctype>
 #include <iostream>
 #include <map>
+#include <regex>
 #include <sstream>
 #include <stdexcept>
 
@@ -22,6 +23,17 @@ namespace Crails::Odb::SchemaMigrator
     transform(value.begin(), value.end(), value.begin(),
       [](unsigned char c) { return tolower(c); });
     return value;
+  }
+
+  // Converts SQL declared types into whatever Postgres turns them into
+  static string normalize_type(const string& sql_type)
+  {
+    string type = to_lower(sql_type);
+
+    if (type == "bigserial")   return "bigint";
+    if (type == "serial")      return "integer";
+    if (type == "smallserial") return "smallint";
+    return type;
   }
 
   static PGconn* native_handle(odb::database& db)
@@ -68,6 +80,7 @@ namespace Crails::Odb::SchemaMigrator
     return !select(handle, sql).empty();
   }
 
+  // name -> postgres-reported data_type (lowercase, e.g. "bigint", "text")
   static map<string, string> existing_columns(PGconn* handle, const string& table)
   {
     map<string, string> columns;
@@ -127,16 +140,80 @@ namespace Crails::Odb::SchemaMigrator
     return sql.str();
   }
 
+  // Does not work on ADD CONSTRAINT, hence why execute_recoverable is needed
+  static string make_index_idempotent(const string& sql)
+  {
+    static const regex create_index(
+      R"(^(CREATE\s+(?:UNIQUE\s+)?INDEX\s+)(?!IF\s+NOT\s+EXISTS))", regex::icase
+    );
+    return regex_replace(sql, create_index, "$1IF NOT EXISTS ", regex_constants::format_first_only);
+  }
+
+  // Checks if an error is just an "already exists" and not worth stopping for
+  static bool is_benign_already_exists(const string& what)
+  {
+    return what.find("42P07") != string::npos
+        || what.find("42710") != string::npos
+        || what.find("42701") != string::npos;
+  }
+
+  static string extract_constraint_name(const string& sql)
+  {
+    static const regex re(R"re(ADD\s+CONSTRAINT\s+"([^"]+)")re", regex::icase);
+    smatch match;
+
+    if (regex_search(sql, match, re))
+      return match[1];
+    return "";
+  }
+
+  static bool constraint_exists(PGconn* handle, const string& table, const string& name)
+  {
+    string sql =
+      "SELECT 1 FROM pg_constraint"
+      " WHERE conname = '" + name + "'"
+      " AND conrelid = '\"" + table + "\"'::regclass;";
+
+    return !select(handle, sql).empty();
+  }
+
+  static void execute_recoverable(Crails::Odb::Connection& database, PGconn* handle, const string& sql)
+  {
+    PGresult* savepoint = PQexec(handle, "SAVEPOINT schema_migrator;");
+    PQclear(savepoint);
+
+    try
+    {
+      database.execute(sql);
+
+      PGresult* release = PQexec(handle, "RELEASE SAVEPOINT schema_migrator;");
+      PQclear(release);
+    }
+    catch (const exception& e)
+    {
+      PGresult* rollback = PQexec(handle, "ROLLBACK TO SAVEPOINT schema_migrator;");
+      PQclear(rollback);
+      PGresult* release = PQexec(handle, "RELEASE SAVEPOINT schema_migrator;");
+      PQclear(release);
+
+      if (is_benign_already_exists(e.what()))
+        logger << Logger::Info << "[SchemaMigrator] already applied, skipping: " << sql << Logger::endl;
+      else
+        throw;
+    }
+  }
+
   void pgsql_sync(Crails::Odb::Connection& database, const vector<Table>& schema)
   {
     database.transaction.require("odb");
+
     odb::database& db     = database.transaction.get_database();
     PGconn*        handle = native_handle(db);
 
     for (const Table& table : schema)
     {
       if (!table_exists(handle, table.name))
-        database.execute(build_create_table(table));
+        execute_recoverable(database, handle, build_create_table(table));
       else
       {
         map<string, string> live_columns = existing_columns(handle, table.name);
@@ -146,25 +223,31 @@ namespace Crails::Odb::SchemaMigrator
           auto found = live_columns.find(column.name);
 
           if (found == live_columns.end())
-            database.execute(build_add_column(table.name, column));
-          else if (found->second.find(to_lower(column.sql_type)) == string::npos
-                && to_lower(column.sql_type).find(found->second) == string::npos)
+            execute_recoverable(database, handle, build_add_column(table.name, column));
+          else
           {
-            logger << Logger::Error
-                 << "[SchemaMigrator] warning: '" << table.name << "." << column.name
-                 << "' is " << found->second << " in database but " << column.sql_type
-                 << " in the schema. Update was not applied." << Logger::endl;
+            string live = found->second;
+            string want = normalize_type(column.sql_type);
+
+            if (live.find(want) == string::npos && want.find(live) == string::npos)
+              logger << Logger::Error
+                   << "[SchemaMigrator] warning: '" << table.name << "." << column.name
+                   << "' is " << live << " in database but " << column.sql_type
+                   << " in the schema. Update was not applied." << Logger::endl;
           }
         }
       }
 
       for (const string& statement : table.extra_statements)
       {
-        try { database.execute(statement); }
-        catch (const exception& e)
+        string constraint_name = extract_constraint_name(statement);
+
+        if (!constraint_name.empty() && constraint_exists(handle, table.name, constraint_name))
         {
-          logger << Logger::Error << "[SchemaMigrator] " << e.what() << Logger::endl;
+          logger << Logger::Info << "[SchemaMigrator] already applied, skipping: " << statement << Logger::endl;
+          continue;
         }
+        execute_recoverable(database, handle, make_index_idempotent(statement));
       }
     }
   }
