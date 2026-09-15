@@ -13,6 +13,9 @@ if ($config.libcrails_odb.odb_with_pgsql == true)
 if ($config.libcrails_odb.odb_with_mysql == true)
   import intf_libs += libodb-mysql%lib{odb-mysql}
 
+if ($config.libcrails_odb.odb_with_pgsql == true)
+  import intf_libs += libpq%lib{pq}
+
 lib{crails-odb}: {hxx ixx txx cxx}{** -crails/odb/version -crails/odb/backends -crails/odb/id_type} hxx{crails/odb/version crails/odb/backends crails/odb/id_type} $impl_libs $intf_libs
 
 hxx{crails/odb/version}: in{crails/odb/version} $src_root/manifest
