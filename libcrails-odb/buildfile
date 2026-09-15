@@ -3,6 +3,7 @@ impl_libs = # Implementation dependencies.
 import intf_libs += libcrails%lib{crails}
 import intf_libs += libcrails-any%lib{crails-any}
 import intf_libs += libcrails-databases%lib{crails-databases}
+import intf_libs += libcrails-logger%lib{crails-logger}
 import intf_libs += libbacktrace%lib{backtrace}
 
 if ($config.libcrails_odb.odb_with_sqlite == true)

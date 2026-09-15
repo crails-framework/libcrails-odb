@@ -15,4 +15,8 @@ location: https://github.com/crails-framework/libcrails-databases.git#master
 
 :
 role: prerequisite
+location: https://github.com/crails-framework/libcrails-logger.git#master
+
+:
+role: prerequisite
 location: https://github.com/crails-framework/libbacktrace.git#master
