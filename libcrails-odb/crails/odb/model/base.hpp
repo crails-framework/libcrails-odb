@@ -33,6 +33,7 @@ namespace Crails
     public:
       ModelBase() : id(0) {}
       ModelBase(id_type id) : id(id) {}
+      virtual ~ModelBase() = default;
 
       id_type get_id() const { return id; }
       void    set_id(id_type id) { this->id = id; }
