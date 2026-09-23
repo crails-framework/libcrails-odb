@@ -1,8 +1,6 @@
-#ifndef  CRAILS_ODB_TRANSACTION_HPP
-# define CRAILS_ODB_TRANSACTION_HPP
-
-# include <string>
-# include <memory>
+#pragma once
+#include <string>
+#include <memory>
 
 namespace odb
 {
@@ -24,13 +22,14 @@ namespace Crails
 
       std::string get_database_name() const { return database_name; }
       odb::database& get_database();
-
-      static Transaction& get();
+      bool active() const { return odb_transaction != nullptr; }
 
       void require(const std::string& name);
       void start(const std::string& name, odb::database&);
       void commit();
       void rollback();
+      void acquire_thread();
+      void release_thread();
 
     private:
       void cleanup();
@@ -42,5 +41,3 @@ namespace Crails
     };
   }
 }
-
-#endif

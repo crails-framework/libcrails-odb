@@ -19,6 +19,10 @@ namespace Crails
     public:
       Controller(Context& context) : SUPER(context)
       {
+        SUPER::coroutine_executor->add_wrapper({
+          std::bind(&DATABASE::TransactionType::acquire_thread, std::ref(database.transaction())),
+          std::bind(&DATABASE::TransactionType::release_thread, std::ref(database.transaction()))
+        });
       }
 
       virtual void finalize() override
@@ -31,7 +35,10 @@ namespace Crails
           database.commit();
         }
       	else
+        {
           logger << Logger::Debug << "Crails::Odb::finalize: status is " << status << ": changes will rollback." << Logger::endl;
+          database.rollback();
+        }
         SUPER::finalize();
       }
     };

@@ -2,10 +2,10 @@
 #include <odb/session.hxx>
 #include <odb/database.hxx>
 #include <crails/databases.hpp>
-#include <thread>
 #include "database.hpp"
 #include "transaction.hpp"
 #include "database_settings.hpp"
+#include "exception.hpp"
 
 using namespace std;
 using namespace Crails;
@@ -21,16 +21,10 @@ Odb::Transaction::~Transaction()
 {
 }
 
-Odb::Transaction& Odb::Transaction::get()
-{
-  static thread_local Odb::Transaction transaction;
-  return transaction;
-}
-
 odb::database& Odb::Transaction::get_database()
 {
   if (!odb_database)
-    throw std::runtime_error("asked for a database on an uninitialized Transaction");
+    throw Odb::Exception("asked for a database on an uninitialized Transaction");
   return *odb_database;
 }
 
@@ -66,7 +60,7 @@ void Odb::Transaction::start(const std::string& name, odb::database& database)
   }
   catch (const odb::exception& e)
   {
-    throw boost_ext::runtime_error(e.what());
+    throw Odb::Exception(e);
   }
 }
 
@@ -74,7 +68,6 @@ void Odb::Transaction::commit()
 {
   if (odb_transaction)
   {
-    //std::cout << "odb commit" << std::endl;
     try
     {
       odb_transaction->commit();
@@ -82,7 +75,7 @@ void Odb::Transaction::commit()
     }
     catch (const odb::exception& e)
     {
-      throw boost_ext::runtime_error(e.what());
+      throw Odb::Exception(e);
     }
   }
 }
@@ -91,7 +84,6 @@ void Odb::Transaction::rollback()
 {
   if (odb_transaction)
   {
-    //std::cout << "odb rollback" << std::endl;
     try
     {
       odb_transaction->rollback();
@@ -102,6 +94,18 @@ void Odb::Transaction::rollback()
       logger << Logger::Error << "Odb MAJOR FAILURE: rollback failed: " << e.what() << Logger::endl;
     }
   }
+}
+
+void Odb::Transaction::acquire_thread()
+{
+  if (active())
+    odb::transaction::current(*odb_transaction);
+}
+
+void Odb::Transaction::release_thread()
+{
+  if (active())
+    odb::transaction::reset_current();
 }
 
 void Odb::Transaction::cleanup()

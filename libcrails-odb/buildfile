@@ -2,15 +2,16 @@ intf_libs = # Interface dependencies.
 impl_libs = # Implementation dependencies.
 import intf_libs += libcrails%lib{crails}
 import intf_libs += libcrails-any%lib{crails-any}
+import intf_libs += libcrails-controllers%lib{crails-controllers}
 import intf_libs += libcrails-databases%lib{crails-databases}
 import intf_libs += libcrails-logger%lib{crails-logger}
 import intf_libs += libbacktrace%lib{backtrace}
 
-if ($config.libcrails_odb.odb_with_sqlite == true)
+if ($config.libcrails_odb.with_sqlite == true)
   import intf_libs += libodb-sqlite%lib{odb-sqlite}
-if ($config.libcrails_odb.odb_with_pgsql == true)
+if ($config.libcrails_odb.with_pgsql == true)
   import intf_libs += libodb-pgsql%lib{odb-pgsql}
-if ($config.libcrails_odb.odb_with_mysql == true)
+if ($config.libcrails_odb.with_mysql == true)
   import intf_libs += libodb-mysql%lib{odb-mysql}
 
 if ($config.libcrails_odb.odb_with_pgsql == true)

@@ -1,0 +1,28 @@
+import libcrailsodb = libcrails-odb%lib{crails-odb}
+import libs += libodb-sqlite%lib{odb-sqlite}
+import libs += libcrails-odb%lib{crails-odb}
+
+exe{driver}: {hxx ixx txx cxx}{** -test_record-odb} {hxx ixx cxx}{test_record-odb} $libs
+
+libue{test_record-meta}: $libcrailsodb
+exe{driver}: libue{test_record-meta} $libs
+
+<{hxx ixx cxx}{test_record-odb}>: hxx{test_record} libue{test_record-meta} $odb
+{{
+  pops = $cxx.lib_poptions($<[1])
+  depdb hash $pops
+  diag odb ($>[0])
+  odb --database sqlite                 \
+      --default-pointer std::shared_ptr \
+      --generate-schema                 \
+      --generate-query                  \
+      --schema-format embedded          \
+      --hxx-suffix .hpp                 \
+      --cxx-suffix .cpp                 \
+      --output-dir $out_base            \
+      --at-once                         \
+      "-I$src_base" $pops               \
+      $path($<[0])
+}}
+
+cxx.poptions =+ "-I$out_base" "-I$src_base"

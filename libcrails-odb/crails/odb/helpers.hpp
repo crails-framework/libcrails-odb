@@ -48,6 +48,20 @@ class IdListDataUpdater
 {
   IdListDataUpdater() = delete;
 public:
+# if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
+  static bool update_id_list(LIST& id_list, Data model_ids)
+  {
+    return update_id_list(Crails::Odb::ConnectionHandle(), id_list, model_ids);
+  }
+
+  static bool update_id_list(Crails::Odb::ConnectionHandle& database, LIST& id_list, Data model_ids)
+  {
+    LIST ids = Crails::unique_list<LIST>(model_ids);
+
+    wipe_removed_ids(ids, id_list);
+    return aggregate_new_ids(database, ids, id_list);
+  }
+# else
   static bool update_id_list(LIST& id_list, Data model_ids)
   {
     LIST ids = Crails::unique_list<LIST>(model_ids);
@@ -55,6 +69,8 @@ public:
     wipe_removed_ids(ids, id_list);
     return aggregate_new_ids(ids, id_list);
   }
+# endif
+
 private:
   static void wipe_removed_ids(LIST& input, LIST& output)
   {
@@ -72,11 +88,15 @@ private:
     }
   }
 
+  # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
   static bool aggregate_new_ids(const LIST& input, LIST& output)
   {
-  # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
-    Crails::Odb::Connection database;
+    Crails::Odb::ConnectionHandle database;
+    return aggregate_new_ids(database, input, output);
+  }
 
+  static bool aggregate_new_ids(Crails::Odb::ConnectionHandle& database, const LIST& input, LIST& output)
+  {
     for (Crails::Odb::id_type id : input)
     {
       std::shared_ptr<MODEL> model;
@@ -85,12 +105,16 @@ private:
         return false;
       output.push_back(id);
     }
-  # else
-    for (Crails::Odb::id_type id : input)
-      output.push_back(id);
-  # endif
     return true;
   }
+  # else
+  static bool aggregate_new_ids(const LIST& input, LIST& output)
+  {
+    for (Crails::Odb::id_type id : input)
+      output.push_back(id);
+    return true;
+  }
+  # endif
 };
 
 /*
@@ -101,6 +125,21 @@ class IdListDataUpdater<MODEL, LIST, false> // list is assumed to be a list of p
 {
   IdListDataUpdater() = delete;
 public:
+  # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
+  static bool update_id_list(LIST& model_list, Data model_ids)
+  {
+    Crails::Odb::ConnectionHandle database;
+    return update_id_list(database, model_list, model_ids);
+  }
+
+  static bool update_id_list(Crails::Odb::ConnectionHandle& database, LIST& model_list, Data model_ids)
+  {
+    auto ids = Crails::unique_list<std::vector<Crails::Odb::id_type>>(model_ids);
+
+    wipe_removed_ids(ids, model_list);
+    return aggregate_new_ids(database, ids, model_list);
+  }
+  # else
   static bool update_id_list(LIST& model_list, Data model_ids)
   {
     auto ids = Crails::unique_list<std::vector<Crails::Odb::id_type>>(model_ids);
@@ -108,6 +147,8 @@ public:
     wipe_removed_ids(ids, model_list);
     return aggregate_new_ids(ids, model_list);
   }
+  # endif
+
 private:
   static void wipe_removed_ids(std::vector<Crails::Odb::id_type>& input, LIST& output)
   {
@@ -125,11 +166,15 @@ private:
     }
   }
 
+  # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
   static bool aggregate_new_ids(const std::vector<Crails::Odb::id_type>& input, LIST& output)
   {
-  # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
-    Crails::Odb::Connection database;
+    Crails::Odb::ConnectionHandle database;
+    return aggregate_new_ids(database, input, output);
+  }
 
+  static bool aggregate_new_ids(Crails::Odb::ConnectionHandle& database, const std::vector<Crails::Odb::id_type>& input, LIST& output)
+  {
     for (Crails::Odb::id_type id : input)
     {
       std::shared_ptr<MODEL> model;
@@ -138,20 +183,16 @@ private:
         return false;
       output.push_back(model);
     }
-  # elif defined(__COMET_CLIENT__)
-    for (Crails::Odb::id_type id : input)
-    {
-      std::shared_ptr<MODEL> model = std::make_shared<MODEL>();
-
-      model->set_id(id);
-  #  ifdef COMET_MODELS_AUTOFETCH
-      model->fetch();
-  #  endif
-      output.push_back(model);
-    }
-  # endif
     return true;
   }
+  # else
+  static bool aggregate_new_ids(const std::vector<Crails::Odb::id_type>& input, LIST& output)
+  {
+    for (Crails::Odb::id_type id : input)
+      output.push_back(nullptr);
+    return true;
+  }
+  # endif
 };
 
 /*

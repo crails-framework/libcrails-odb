@@ -18,22 +18,31 @@ namespace Crails
     class Connection
     {
       unsigned long recoverable_count(std::function<unsigned long()> action) const;
+
+    protected:
+      Transaction  own_transaction;
+      Transaction* active_transaction = &own_transaction;
+
     public:
+      typedef Transaction TransactionType;
+
       Connection();
       virtual ~Connection();
 
       float time = 0.f;
 
+      Transaction& transaction() { return *active_transaction; }
+
       template<typename MODEL>
       void start_transaction_for()
       {
-        transaction.require(MODEL().get_database_name());
+        transaction().require(MODEL().get_database_name());
       }
 
       template<typename MODEL>
       void start_transaction_for(const MODEL& model)
       {
-        transaction.require(model.get_database_name());
+        transaction().require(model.get_database_name());
       }
 
       void commit();
@@ -58,7 +67,7 @@ namespace Crails
           Utils::TimeGuard timer(time);
 
           start_transaction_for<MODEL>();
-          return transaction.get_database()
+          return transaction().get_database()
             .query_value<typename MODEL::Count>(query).value;
         });
       }
@@ -72,7 +81,7 @@ namespace Crails
           Utils::TimeGuard timer(time);
 
           start_transaction_for<MODEL>();
-          model = transaction.get_database().query_one<MODEL>(query);
+          model = transaction().get_database().query_one<MODEL>(query);
           return model.get() != 0;
         });
       }
@@ -91,7 +100,7 @@ namespace Crails
           Utils::TimeGuard timer(time);
 
           start_transaction_for<MODEL>();
-          results = transaction.get_database().query<MODEL>(query);
+          results = transaction().get_database().query<MODEL>(query);
           return !results.empty();
         });
       }
@@ -104,7 +113,7 @@ namespace Crails
           Utils::TimeGuard timer(time);
           start_transaction_for(model);
           model.before_save();
-          model.save(transaction.get_database());
+          model.save(transaction().get_database());
           model.after_save();
           return true;
         });
@@ -121,7 +130,7 @@ namespace Crails
           start_transaction_for(model);
           try
           {
-            model.destroy(transaction.get_database());
+            model.destroy(transaction().get_database());
             model.after_destroy();
           }
           catch (const odb::object_not_persistent& e)
@@ -149,7 +158,6 @@ namespace Crails
       }
 
       bool rollback_on_destruction = true;
-      Transaction& transaction;
     };
 
     class ConnectionHandle : public Connection
@@ -158,6 +166,12 @@ namespace Crails
       ConnectionHandle()
       {
         rollback_on_destruction = false;
+      }
+
+      ConnectionHandle(Connection& target)
+      {
+        rollback_on_destruction = false;
+        active_transaction = &target.transaction();
       }
     };
   }

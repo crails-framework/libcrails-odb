@@ -11,6 +11,10 @@ location: https://github.com/crails-framework/libcrails-any.git#master
 
 :
 role: prerequisite
+location: https://github.com/crails-framework/libcrails-controllers.git#master
+
+:
+role: prerequisite
 location: https://github.com/crails-framework/libcrails-databases.git#master
 
 :

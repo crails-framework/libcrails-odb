@@ -205,9 +205,9 @@ namespace Crails::Odb::SchemaMigrator
 
   void pgsql_sync(Crails::Odb::Connection& database, const vector<Table>& schema)
   {
-    database.transaction.require("odb");
+    database.transaction().require("odb");
 
-    odb::database& db     = database.transaction.get_database();
+    odb::database& db     = database.transaction().get_database();
     PGconn*        handle = native_handle(db);
 
     for (const Table& table : schema)
