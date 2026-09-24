@@ -82,6 +82,22 @@ namespace Crails
         "",   // vfs
         std::make_unique<odb::sqlite::single_connection_factory>()
       );
+
+      std::string name = cast<std::string>(settings, "name", "crails_db");
+      const auto pool_max = cast<unsigned int>(settings, "pool_max", 10);
+      std::unique_ptr<odb::sqlite::connection_factory> factory;
+
+      if (name == ":memory:")
+        factory = std::move(std::make_unique<odb::sqlite::single_connection_factory>());
+      else
+        factory = std::move(std::make_unique<odb::sqlite::connection_pool_factory>(pool_max));
+      return new odb::sqlite::database(
+        name,
+        SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+        true, // foreign_keys
+        "",   // vfs
+        std::move(factory)
+      );
   #else
       throw boost_ext::runtime_error("libcrails-odb was built without support for `sqlite`");
       return nullptr;
