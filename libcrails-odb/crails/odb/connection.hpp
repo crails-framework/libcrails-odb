@@ -163,16 +163,9 @@ namespace Crails
     class ConnectionHandle : public Connection
     {
     public:
-      ConnectionHandle()
-      {
-        rollback_on_destruction = false;
-      }
-
-      ConnectionHandle(Connection& target)
-      {
-        rollback_on_destruction = false;
-        active_transaction = &target.transaction();
-      }
+      ConnectionHandle();
+      ConnectionHandle(Connection&);
+      ~ConnectionHandle();
     };
   }
 }

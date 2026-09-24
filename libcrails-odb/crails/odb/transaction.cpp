@@ -21,6 +21,13 @@ Odb::Transaction::~Transaction()
 {
 }
 
+bool Odb::Transaction::active() const
+{
+  return odb_transaction != nullptr
+      && odb::transaction::has_current()
+      && &odb::transaction::current() == odb_transaction.get();
+}
+
 odb::database& Odb::Transaction::get_database()
 {
   if (!odb_database)
@@ -98,13 +105,13 @@ void Odb::Transaction::rollback()
 
 void Odb::Transaction::acquire_thread()
 {
-  if (active())
+  if (odb_transaction)
     odb::transaction::current(*odb_transaction);
 }
 
 void Odb::Transaction::release_thread()
 {
-  if (active())
+  if (odb_transaction)
     odb::transaction::reset_current();
 }
 

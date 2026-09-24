@@ -115,6 +115,25 @@ void driver()
     assert(connection.find_one(found, record.get_id()));
     assert(found->get_label() == "proxied write");
   }
+
+  // BEGIN ConnectionHandle: can set aside the current transaction
+  {
+    Odb::Connection        target;
+    TestRecord             record("proxied write");
+
+    target.save(record);
+    assert(target.transaction().active());
+
+    {
+      Odb::ConnectionHandle handle;
+      shared_ptr<TestRecord> seen_through_handle;
+
+      assert(handle.find_one(seen_through_handle, record.get_id()) == false);
+      assert(handle.transaction().active());
+    }
+
+    assert(!target.transaction().active()); // the handle should have rollbacked the ongoing transaction as a safety measure
+  }
 }
 
 int main()
