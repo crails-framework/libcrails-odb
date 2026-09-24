@@ -53,6 +53,7 @@ void Odb::Transaction::require(const std::string& name)
 
 void Odb::Transaction::start(const std::string& name, odb::database& database)
 {
+  logger << Logger::Debug << "Odb::Transaction::start" << Logger::endl;
   rollback();
   try
   {
@@ -79,6 +80,7 @@ void Odb::Transaction::commit()
     {
       odb_transaction->commit();
       cleanup();
+      logger << Logger::Debug << "Odb::Transaction::commit" << Logger::endl;
     }
     catch (const odb::exception& e)
     {
@@ -95,6 +97,7 @@ void Odb::Transaction::rollback()
     {
       odb_transaction->rollback();
       cleanup();
+      logger << Logger::Debug << "Odb::Transaction::rollback" << Logger::endl;
     }
     catch (const odb::exception& e)
     {
@@ -106,13 +109,19 @@ void Odb::Transaction::rollback()
 void Odb::Transaction::acquire_thread()
 {
   if (odb_transaction)
+  {
+    logger << Logger::Debug << "Odb::Transaction::acquire_thread" << Logger::endl;
     odb::transaction::current(*odb_transaction);
+  }
 }
 
 void Odb::Transaction::release_thread()
 {
   if (odb_transaction)
+  {
+    logger << Logger::Debug << "Odb::Transaction::release_thread" << Logger::endl;
     odb::transaction::reset_current();
+  }
 }
 
 void Odb::Transaction::cleanup()
