@@ -59,6 +59,11 @@ void Odb::Transaction::start(const std::string& name, odb::database& database)
   rollback();
   try
   {
+    if (odb::transaction::has_current())
+    {
+      logger << Logger::Debug << "Odb::Transaction: dangling transaction found, overriding" << Logger::endl;
+      odb::transaction::reset_current();
+    }
     database_name   = name;
     odb_transaction = unique_ptr<odb::transaction>(
       new odb::transaction(database.begin())
