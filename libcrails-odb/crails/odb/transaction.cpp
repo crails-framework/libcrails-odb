@@ -49,6 +49,8 @@ void Odb::Transaction::require(const std::string& name)
       start(name, crails_database.get_agnostic_database());
     }
   }
+  else if (!active())
+    start(name, *odb_database);
 }
 
 void Odb::Transaction::start(const std::string& name, odb::database& database)
