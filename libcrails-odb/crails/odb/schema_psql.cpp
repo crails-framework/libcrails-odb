@@ -47,6 +47,7 @@ namespace Crails::Odb::SchemaMigrator
 
   static vector<vector<string>> select(PGconn* handle, const string& sql)
   {
+    logger << Logger::Debug << "[SchemaMigrator] Executing: " << sql << Logger::endl;
     vector<vector<string>> rows;
     PGresult* result = PQexec(handle, sql.c_str());
 
@@ -54,7 +55,8 @@ namespace Crails::Odb::SchemaMigrator
     {
       string error = PQresultErrorMessage(result);
       PQclear(result);
-      throw runtime_error("SchemaMigrator: introspection query failed: " + error);
+      logger << Logger::Debug << "[SchemaMigrator] Introspection query failed: " << error << Logger::endl;
+      return rows;
     }
 
     int row_count = PQntuples(result), column_count = PQnfields(result);
@@ -167,6 +169,16 @@ namespace Crails::Odb::SchemaMigrator
     return "";
   }
 
+  static string extract_alter_table_name(const string& sql)
+  {
+    static const regex re(R"re(^\s*ALTER\s+TABLE\s+"([^"]+)")re", regex::icase);
+    smatch match;
+
+    if (regex_search(sql, match, re))
+      return match[1];
+    return "";
+  }
+
   static bool constraint_exists(PGconn* handle, const string& table, const string& name)
   {
     string sql =
@@ -184,6 +196,7 @@ namespace Crails::Odb::SchemaMigrator
 
     try
     {
+      logger << Logger::Debug << "[SchemaMigrator] Executing: " << sql << Logger::endl;
       database.execute(sql);
 
       PGresult* release = PQexec(handle, "RELEASE SAVEPOINT schema_migrator;");
@@ -210,6 +223,7 @@ namespace Crails::Odb::SchemaMigrator
     odb::database& db     = database.transaction().get_database();
     PGconn*        handle = native_handle(db);
 
+    // First pass: creates tables and columns
     for (const Table& table : schema)
     {
       if (!table_exists(handle, table.name))
@@ -237,12 +251,19 @@ namespace Crails::Odb::SchemaMigrator
           }
         }
       }
+    }
 
+    // Second pass: indexes, constraints, alteratinons
+    for (const Table& table : schema)
+    {
       for (const string& statement : table.extra_statements)
       {
         string constraint_name = extract_constraint_name(statement);
+        string target_table = extract_alter_table_name(statement);
 
-        if (!constraint_name.empty() && constraint_exists(handle, table.name, constraint_name))
+        if (target_table.empty())
+          target_table = table.name;
+        if (!constraint_name.empty() && constraint_exists(handle, target_table, constraint_name))
         {
           logger << Logger::Info << "[SchemaMigrator] already applied, skipping: " << statement << Logger::endl;
           continue;
