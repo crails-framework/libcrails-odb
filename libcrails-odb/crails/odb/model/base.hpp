@@ -26,6 +26,8 @@ namespace Crails
 {
   namespace Odb
   {
+    class Connection;
+
     # pragma db object abstract
     class ModelBase
     {
@@ -46,10 +48,10 @@ namespace Crails
       void destroy(odb::database&);
 # endif
 
-      virtual void before_save()    {}
-      virtual void after_save()     {}
-      virtual void before_destroy() {}
-      virtual void after_destroy()  {}
+      virtual void before_save(Connection&)    {}
+      virtual void after_save(Connection&)     {}
+      virtual void before_destroy(Connection&) {}
+      virtual void after_destroy(Connection&)  {}
 
     protected:
 # ifndef __COMET_CLIENT__

@@ -112,9 +112,9 @@ namespace Crails
         {
           Utils::TimeGuard timer(time);
           start_transaction_for(model);
-          model.before_save();
+          model.before_save(*this);
           model.save(transaction().get_database());
-          model.after_save();
+          model.after_save(*this);
           return true;
         });
       }
@@ -126,12 +126,12 @@ namespace Crails
         {
           Utils::TimeGuard timer(time);
 
-          model.before_destroy();
+          model.before_destroy(*this);
           start_transaction_for(model);
           try
           {
             model.destroy(transaction().get_database());
-            model.after_destroy();
+            model.after_destroy(*this);
           }
           catch (const odb::object_not_persistent& e)
           {
