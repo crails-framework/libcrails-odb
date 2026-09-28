@@ -46,7 +46,6 @@ namespace Crails
       virtual std::string get_database_name() const;
       void save(odb::database&);
       void destroy(odb::database&);
-# endif
 
       virtual void before_save(Connection&)    {}
       virtual void after_save(Connection&)     {}
@@ -54,7 +53,6 @@ namespace Crails
       virtual void after_destroy(Connection&)  {}
 
     protected:
-# ifndef __COMET_CLIENT__
       virtual void odb_persist(odb::database&) = 0;
       virtual void odb_update(odb::database&)  = 0;
       virtual void odb_erase(odb::database&)   = 0;
