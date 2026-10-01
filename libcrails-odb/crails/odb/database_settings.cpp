@@ -23,7 +23,7 @@ namespace Crails
   }
 }
 
-Databases::DatabaseSettings Odb::get_database_settings_for(const std::string& name)
+Databases::DatabaseSettings Odb::get_database_settings_for(const std::string_view name)
 {
   try {
     const Databases::DatabaseSettings& settings =
@@ -34,13 +34,13 @@ Databases::DatabaseSettings Odb::get_database_settings_for(const std::string& na
     return {
       { "type",     Crails::cast<std::string>(settings, "type", "sqlite") },
       { "host",     Crails::cast<std::string>(settings, "host", "localhost") },
-      { "name",     name },
+      { "name",     std::string(name) },
       { "user",     Crails::cast<std::string>(settings, "user", "") },
       { "password", Crails::cast<std::string>(settings, "password", "") },
       { "port",     Crails::cast<unsigned int>(settings, "port", 5432) }
     };
   }
   catch (const std::exception& error) {
-    throw Databases::Exception("Database not found '" + name + '\'');
+    throw Databases::Exception("Database not found '" + std::string(name) + '\'');
   }
 }

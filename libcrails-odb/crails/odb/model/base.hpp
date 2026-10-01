@@ -43,7 +43,7 @@ namespace Crails
       bool    is_persistent() const { return id != ODB_NULL_ID && !erased; }
 
 # ifndef __COMET_CLIENT__
-      virtual std::string get_database_name() const;
+      virtual std::string_view get_database_name() const;
       void save(odb::database&);
       void destroy(odb::database&);
 

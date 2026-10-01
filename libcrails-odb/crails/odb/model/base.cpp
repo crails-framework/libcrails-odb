@@ -3,9 +3,9 @@
 using namespace std;
 using namespace Crails;
 
-std::string Odb::ModelBase::get_database_name() const
+string_view Odb::ModelBase::get_database_name() const
 {
-  return "default";
+  return string_view("default");
 }
 
 void Odb::ModelBase::save(odb::database& db)

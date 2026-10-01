@@ -5,6 +5,7 @@
 # include <crails/safe_ptr.hpp>
 # include <odb/result.hxx>
 # include <odb/database.hxx>
+# include "model/get_database.hpp"
 # include "query.hpp"
 # include "query_stream.hpp"
 # include "transaction.hpp"
@@ -36,13 +37,13 @@ namespace Crails
       template<typename MODEL>
       void start_transaction_for()
       {
-        transaction().require(MODEL().get_database_name());
+        transaction().require(get_database_name_for(MODEL()));
       }
 
       template<typename MODEL>
       void start_transaction_for(const MODEL& model)
       {
-        transaction().require(model.get_database_name());
+        transaction().require(get_database_name_for(model));
       }
 
       void commit();
