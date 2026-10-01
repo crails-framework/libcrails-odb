@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <string_view>
 #include <memory>
 
 namespace odb
@@ -24,8 +25,8 @@ namespace Crails
       odb::database& get_database();
       bool active() const;
 
-      void require(const std::string& name);
-      void start(const std::string& name, odb::database&);
+      void require(const std::string_view name);
+      void start(const std::string_view name, odb::database&);
       void commit();
       void rollback();
       void acquire_thread();

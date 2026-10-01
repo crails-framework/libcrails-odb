@@ -35,7 +35,7 @@ odb::database& Odb::Transaction::get_database()
   return *odb_database;
 }
 
-void Odb::Transaction::require(const std::string& name)
+void Odb::Transaction::require(const std::string_view name)
 {
   if (database_name != name || !odb_database)
   {
@@ -53,7 +53,7 @@ void Odb::Transaction::require(const std::string& name)
     start(name, *odb_database);
 }
 
-void Odb::Transaction::start(const std::string& name, odb::database& database)
+void Odb::Transaction::start(const std::string_view name, odb::database& database)
 {
   logger << Logger::Debug << "Odb::Transaction::start" << Logger::endl;
   rollback();
