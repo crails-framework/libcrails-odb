@@ -26,7 +26,7 @@ namespace odb
         {
           std::string_view source(b.data(), n);
 
-          if (source[0] == '{' && *source.rbegin() == '}')
+          if (n > 1 && source[0] == '{' && *source.rbegin() == '}')
           {
             std::istringstream ss(std::string(&source[1], source.length() - 1));
             std::string current_value;
