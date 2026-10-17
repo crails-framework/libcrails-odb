@@ -21,6 +21,7 @@ exe{driver}: libue{test_record-meta} $libs
       --cxx-suffix .cpp                 \
       --output-dir $out_base            \
       --at-once                         \
+      --std c++20                       \
       "-I$src_base" $pops               \
       $path($<[0])
 }}
