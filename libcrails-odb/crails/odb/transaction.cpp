@@ -21,7 +21,7 @@ Odb::Transaction::~Transaction()
 {
 }
 
-bool Odb::Transaction::active() const
+inline bool Odb::Transaction::active() const
 {
   return odb_transaction != nullptr
       && odb::transaction::has_current()
@@ -124,7 +124,7 @@ void Odb::Transaction::acquire_thread()
 
 void Odb::Transaction::release_thread()
 {
-  if (odb_transaction)
+  if (active())
   {
     logger << Logger::Debug << "Odb::Transaction::release_thread" << Logger::endl;
     odb::transaction::reset_current();
