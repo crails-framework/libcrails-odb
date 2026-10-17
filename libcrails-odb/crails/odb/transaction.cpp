@@ -21,7 +21,7 @@ Odb::Transaction::~Transaction()
 {
 }
 
-inline bool Odb::Transaction::active() const
+bool Odb::Transaction::active() const
 {
   return odb_transaction != nullptr
       && odb::transaction::has_current()
