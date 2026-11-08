@@ -25,6 +25,15 @@ namespace Crails
       Transaction* active_transaction = &own_transaction;
 
     public:
+      std::function<std::string_view(std::string_view)> database_name_resolver;
+
+      template<typename MODEL>
+      std::string_view resolve_database_name(const MODEL& model)
+      {
+        auto base = get_database_name_for(model);
+        return database_name_resolver ? database_name_resolver(base) : base;
+      }
+
       typedef Transaction TransactionType;
 
       Connection();
@@ -37,13 +46,13 @@ namespace Crails
       template<typename MODEL>
       void start_transaction_for()
       {
-        transaction().require(get_database_name_for(MODEL()));
+        transaction().require(resolve_database_name(MODEL()));
       }
 
       template<typename MODEL>
       void start_transaction_for(const MODEL& model)
       {
-        transaction().require(get_database_name_for(model));
+        transaction().require(resolve_database_name(model));
       }
 
       void commit();

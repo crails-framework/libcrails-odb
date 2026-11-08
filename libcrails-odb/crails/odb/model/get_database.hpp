@@ -22,7 +22,7 @@ namespace Crails
     }
 
     template<typename T>
-    constexpr std::string_view get_database_name_for(const T& model)
+    constexpr decltype(auto) get_database_name_for(const T& model)
     {
       if constexpr (TypeTraits::has_get_db_name<T>::value)
         return model.get_database_name();

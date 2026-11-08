@@ -20,6 +20,7 @@ Odb::ConnectionHandle::ConnectionHandle(Connection& target)
 {
   rollback_on_destruction = false;
   active_transaction = &target.transaction();
+  database_name_resolver = target.database_name_resolver;
 }
 
 Odb::ConnectionHandle::~ConnectionHandle()
