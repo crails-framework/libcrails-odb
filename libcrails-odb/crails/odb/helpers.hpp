@@ -51,7 +51,8 @@ public:
 # if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
   static bool update_id_list(LIST& id_list, Data model_ids)
   {
-    return update_id_list(Crails::Odb::ConnectionHandle(), id_list, model_ids);
+    Crails::Odb::ConnectionHandle database;
+    return update_id_list(database, id_list, model_ids);
   }
 
   static bool update_id_list(Crails::Odb::ConnectionHandle& database, LIST& id_list, Data model_ids)
@@ -202,6 +203,12 @@ template<typename MODEL, typename LIST>
 bool update_id_list(LIST& model_list, Data model_ids)
 {
   return IdListDataUpdater<MODEL, LIST>::update_id_list(model_list, model_ids);
+}
+
+template<typename MODEL, typename LIST>
+bool update_id_list(Crails::Odb::ConnectionHandle database, LIST& model_list, Data model_ids)
+{
+  return IdListDataUpdater<MODEL, LIST>::update_id_list(database, model_list, model_ids);
 }
 
 #endif
