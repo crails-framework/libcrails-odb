@@ -25,6 +25,11 @@ namespace Crails
         });
       }
 
+      virtual ~Controller()
+      {
+        database.transaction().rollback();
+      }
+
       virtual void finalize() override
       {
         auto status = static_cast<int>(SUPER::response.get_status_code());
