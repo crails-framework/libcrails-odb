@@ -1,3 +1,4 @@
+#ifndef  TWILIDOC
 #ifndef  CRAILS_ODB_TRAITS_HPP
 # define CRAILS_ODB_TRAITS_HPP
 
@@ -30,4 +31,5 @@
 #  undef TRAITS_INCLUDE_SQL_BACKEND
 # endif
 
+#endif
 #endif

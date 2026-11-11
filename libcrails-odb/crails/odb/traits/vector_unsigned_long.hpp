@@ -1,3 +1,4 @@
+#ifndef TWILIDOC
 #include <cstring> // std::memcpy
 #include <vector>
 #include <sstream>
@@ -61,4 +62,4 @@ namespace odb
     };
   }
 }
-
+#endif

@@ -1,3 +1,4 @@
+#ifndef TWILIDOC
 #include <cstring> // std::memcpy
 #include <crails/datatree.hpp>
 #include <crails/logger.hpp>
@@ -53,3 +54,4 @@ namespace odb
     };
   }
 }
+#endif
