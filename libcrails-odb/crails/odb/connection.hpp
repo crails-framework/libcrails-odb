@@ -160,7 +160,7 @@ namespace Crails
 
           if (find(results, query))
           {
-            for (auto& model : results)
+            for (auto& model : std::vector<MODEL>(results.begin(), results.end()))
               destroy(model);
           }
           return true;
