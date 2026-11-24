@@ -10,9 +10,15 @@ namespace Crails
 {
   namespace Odb
   {
+    struct ControllerMarker {};
+
     template<class SUPER = Crails::Controller, class DATABASE = Odb::Connection>
-    class Controller : public SUPER
+    class Controller : public SUPER, public ControllerMarker
     {
+    static_assert(
+      !std::is_base_of_v<ControllerMarker, SUPER>,
+      "SUPER already inherits Odb::Controller: your inheritance chain cannot include Odb::Controller more than once"
+    );
     protected:
       DATABASE database;
 
