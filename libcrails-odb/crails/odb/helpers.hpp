@@ -205,10 +205,12 @@ bool update_id_list(LIST& model_list, Data model_ids)
   return IdListDataUpdater<MODEL, LIST>::update_id_list(model_list, model_ids);
 }
 
+# if !defined(ODB_COMPILER) && !defined(__COMET_CLIENT__)
 template<typename MODEL, typename LIST>
 bool update_id_list(Crails::Odb::ConnectionHandle database, LIST& model_list, Data model_ids)
 {
   return IdListDataUpdater<MODEL, LIST>::update_id_list(database, model_list, model_ids);
 }
+# endif
 
 #endif
